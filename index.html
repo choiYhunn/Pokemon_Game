@@ -67,7 +67,7 @@
 
     const getSkillSet = (arch) => {
         const type = arch.split('/')[0];
-        const base = { Q: { name: 'BOLT', cd: 1.0, color: '#fff', speed: 18, damage: 35, pierce: false }, W: { name: 'DASH', cd: 4.0 }, E: { name: 'PULSE', cd: 6.0, radius: 200 }, R: { name: 'STORM', cd: 20.0 } };
+        const base = { Q: { name: 'BOLT', cd: 1.0, color: '#fff', speed: 18, damage: 35 }, W: { name: 'DASH', cd: 4.0 }, E: { name: 'PULSE', cd: 6.0, radius: 200 }, R: { name: 'STORM', cd: 20.0 } };
         if (type === 'Electric') base.Q.color = '#fde047';
         if (type === 'Fire') { base.Q.color = '#fb923c'; base.Q.pierce = true; }
         if (type === 'Water') { base.Q.color = '#38bdf8'; base.Q.speed = 22; }
@@ -82,23 +82,19 @@
       const [score, setScore] = useState(0);
       const [enemies, setEnemies] = useState([]);
       const [projectiles, setProjectiles] = useState([]);
+      const [enemyProjectiles, setEnemyProjectiles] = useState([]);
       const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
       const [effects, setEffects] = useState([]);
       const [dmgNumbers, setDmgNumbers] = useState([]);
 
-      const stateRef = useRef({ pos: { x: 0, y: 0 }, target: { x: 0, y: 0 }, vel: { x: 0, y: 0 }, aim: { x: 1, y: 0 } });
-      const invulnRef = useRef(false);
-      const waveRef = useRef(1);
-      const arenaSizeRef = useRef({ w: 1200, h: 800 });
+      const stateRef = useRef({ pos: { x: 0, y: 0 }, target: { x: 0, y: 0 }, vel: { x: 0, y: 0 }, aim: { x: 1, y: 0 }, hp: 100, invuln: false, wave: 1 });
       const arenaRef = useRef(null);
-      const lastSpawnRef = useRef(0);
 
       const startGame = (h) => {
         new Audio(h.cry).play().catch(()=>{});
-        setHero(h); setHp(100); setScore(0); setEnemies([]); setProjectiles([]); setPhase('playing');
+        setHero(h); setHp(100); setScore(0); setEnemies([]); setProjectiles([]); setEnemyProjectiles([]); setPhase('playing');
         const w = window.innerWidth/2, h2 = window.innerHeight/2;
-        setPos({ x: w, y: h2 }); stateRef.current.pos = { x: w, y: h2 }; stateRef.current.target = { x: w, y: h2 };
-        lastSpawnRef.current = Date.now();
+        setPos({ x: w, y: h2 }); stateRef.current.pos = { x: w, y: h2 }; stateRef.current.target = { x: w, y: h2 }; stateRef.current.hp = 100;
       };
 
       const onArenaClick = (e) => {
@@ -106,12 +102,6 @@
         const tx = e.clientX - rect.left, ty = e.clientY - rect.top;
         stateRef.current.target = { x: tx, y: ty };
         setEffects(prev => [...prev, { id: Math.random(), type: 'waypoint', x: tx, y: ty }]);
-      };
-
-      const spawnDamageNumber = (x, y, val, color) => {
-        const id = Math.random();
-        setDmgNumbers(prev => [...prev, { id, x, y, val, color }]);
-        setTimeout(() => setDmgNumbers(prev => prev.filter(d => d.id !== id)), 800);
       };
 
       const castSkill = useCallback((k) => {
@@ -139,7 +129,7 @@
 
       useEffect(() => {
         const handleMove = (e) => {
-          if (!arenaRef.current || phase !== 'playing') return;
+          if (!arenaRef.current) return;
           const rect = arenaRef.current.getBoundingClientRect();
           const dx = (e.clientX - rect.left) - stateRef.current.pos.x;
           const dy = (e.clientY - rect.top) - stateRef.current.pos.y;
@@ -150,19 +140,14 @@
         window.addEventListener('mousemove', handleMove);
         window.addEventListener('keydown', handleKey);
         return () => { window.removeEventListener('mousemove', handleMove); window.removeEventListener('keydown', handleKey); };
-      }, [castSkill, phase]);
-
-      useEffect(() => {
-        const measure = () => { if (arenaRef.current) { arenaSizeRef.current = { w: arenaRef.current.getBoundingClientRect().width, h: arenaRef.current.getBoundingClientRect().height }; } };
-        measure(); window.addEventListener('resize', measure); return () => window.removeEventListener('resize', measure);
-      }, [phase]);
+      }, [castSkill]);
 
       useEffect(() => {
         if (phase !== 'playing') return;
         const loop = setInterval(() => {
           const s = stateRef.current, p = s.pos, t = s.target;
           
-          // 1. 관성 무빙 엔진 (Kinetic Movement) - 절대 건드리지 않음
+          // Kinetic Movement ( 가속/관성 로직 )
           const dx = t.x - p.x, dy = t.y - p.y;
           const d = Math.hypot(dx, dy);
           if (d > 5) {
@@ -175,80 +160,21 @@
           const nx = p.x + s.vel.x, ny = p.y + s.vel.y;
           setPos({ x: nx, y: ny }); s.pos = { x: nx, y: ny };
 
-          // 2. Q 스킬(투사체) 이동 및 충돌 판정 (수정 및 복구 완료)
-          setProjectiles(prevProj => {
-            const remaining = [];
-            for (const pr of prevProj) {
-                let consumed = false;
-                
-                setEnemies(prevE => {
-                    let scoreAdd = 0;
-                    const nextE = prevE.map(e => {
-                        // 투사체 반경(45) 충돌 판정
-                        if (!consumed && Math.hypot(pr.x - e.x, pr.y - e.y) < 45 && !pr.hitSet.includes(e.id)) {
-                            spawnDamageNumber(e.x, e.y, pr.damage, '#fff');
-                            e.hp -= pr.damage;
-                            if (pr.pierce) pr.hitSet.push(e.id); else consumed = true;
-                        }
-                        return e;
-                    }).filter(e => {
-                        if (e.hp <= 0) { scoreAdd += 50; return false; } return true;
-                    });
-                    if (scoreAdd) setScore(sc => sc + scoreAdd);
-                    return nextE;
-                });
-                
-                pr.x += pr.vx; pr.y += pr.vy; pr.dist += Math.hypot(pr.vx, pr.vy);
-                const { w, h } = arenaSizeRef.current;
-                if (!consumed && pr.dist < 800 && pr.x > -50 && pr.x < w + 50 && pr.y > -50 && pr.y < h + 50) {
-                    remaining.push(pr);
-                }
-            }
-            return remaining;
-          });
-          
-          // 3. 적 이동 및 플레이어 피격 (수정 및 복구 완료)
+          // Projectiles & HP damage
           let damageTaken = 0;
+          setProjectiles(prev => prev.map(pr => ({ ...pr, x: pr.x + pr.vx, y: pr.y + pr.vy, dist: pr.dist + 15 })).filter(pr => pr.dist < 800));
+          
           setEnemies(prev => prev.map(e => {
             const edx = s.pos.x - e.x, edy = s.pos.y - e.y, ed = Math.hypot(edx, edy);
             const moveX = e.x + (edx/ed) * e.kind.speed + Math.sin(Date.now()/200) * 2;
             const moveY = e.y + (edy/ed) * e.kind.speed + Math.cos(Date.now()/200) * 2;
-            
-            // 피격 판정 (넉넉한 55 픽셀 반경)
-            if (ed < 55) {
-                damageTaken += (e.kind.damage / 10);
-            }
+            if (ed < 45) damageTaken += (e.kind.damage / 10); // 프레임당 데미지 분산
             return { ...e, x: moveX, y: moveY };
           }));
 
-          // 실제 HP 삭감 로직
-          if (damageTaken > 0 && !invulnRef.current) {
-             setHp(prev => { 
-               const val = Math.max(0, prev - damageTaken); 
-               if(val <= 0) setPhase('dead'); 
-               return val; 
-             });
-          }
+          if (damageTaken > 0) setHp(prev => { const val = Math.max(0, prev - damageTaken); if(val<=0) setPhase('dead'); return val; });
 
-          // 4. 적 자동 스폰 (복구 완료)
-          const now = Date.now();
-          const spawnInterval = Math.max(300, 1000 - (waveRef.current - 1) * 80);
-          if (now - lastSpawnRef.current > spawnInterval) {
-              lastSpawnRef.current = now;
-              const { w, h } = arenaSizeRef.current;
-              const edge = Math.floor(Math.random() * 4); let ex, ey; const M = 40;
-              if (edge === 0) { ex = w/2 + (Math.random()-0.5)*w; ey = -M; } 
-              else if (edge === 1) { ex = w + M; ey = h/2 + (Math.random()-0.5)*h; } 
-              else if (edge === 2) { ex = w/2 + (Math.random()-0.5)*w; ey = h + M; } 
-              else { ex = -M; ey = h/2 + (Math.random()-0.5)*h; }
-              
-              const wildKind = WILD_POKEMONS[Math.floor(Math.random() * WILD_POKEMONS.length)];
-              setEnemies(prev => prev.length > 80 ? prev : [...prev, {
-                id: Math.random(), x: ex, y: ey, kind: wildKind, hit: false, hp: wildKind.hp, maxHp: wildKind.hp
-              }]);
-          }
-
-          // 5. 스킬 쿨타임 감소
+          // Cooldowns
           setCds(prev => { const n = { ...prev }; let ch = false; Object.keys(n).forEach(k => { if(n[k]>0){ n[k]=Math.max(0, n[k]-0.05); ch=true; } }); return ch ? n : prev; });
         }, 50);
         return () => clearInterval(loop);
@@ -259,7 +185,7 @@
           <h1 className="text-6xl font-bold accent-glow mb-12">POKÉMON ARENA</h1>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 max-w-6xl">
             {HEROES.map(h => (
-              <div key={h.id} onClick={() => startGame(h)} className="border border-[#1a2138] bg-[#0c1120] p-4 rounded-md cursor-pointer hover:border-[#e8c547] transition-all">
+              <div key={h.id} onClick={() => startGame(h)} className="hero-card border border-[#1a2138] bg-[#0c1120] p-4 rounded-md cursor-pointer hover:border-[#e8c547] transition-all">
                 <img src={h.img} className="w-20 h-20 object-contain mb-2" />
                 <div className="text-center text-xs font-bold uppercase">{h.name}</div>
               </div>
@@ -272,39 +198,15 @@
         <div className="h-screen flex flex-col">
           <div ref={arenaRef} className="map-arena" onClick={onArenaClick}>
             <div className="grid-floor" />
-            
             <div className="absolute top-8 left-8 z-50 flex items-center gap-4">
               <div className="hp-bar-outer"><div className="hp-bar-inner" style={{ width: `${hp}%` }} /></div>
               <div className="mono text-2xl font-bold">{Math.ceil(hp)} HP</div>
             </div>
-            
-            <div className="absolute top-8 right-8 z-50 text-right">
-              <div className="text-4xl font-bold accent-glow tabular-nums">{score.toString().padStart(6, '0')}</div>
-            </div>
-
-            {enemies.map(e => ( 
-              <div key={e.id} className="enemy" style={{ left: e.x, top: e.y }}>
-                <div className="enemy-hp-bar"><div className="enemy-hp-fill" style={{width: `${(e.hp/e.maxHp)*100}%`}}></div></div>
-                <img src={e.kind.img} className="w-full h-full object-contain mt-2" />
-              </div> 
-            ))}
-            
-            {projectiles.map(p => ( 
-              <div key={p.id} className="projectile" style={{ 
-                left: p.x, top: p.y, 
-                background: `radial-gradient(circle, #fff 0%, ${p.color} 60%, transparent 100%)`, 
-                boxShadow: `0 0 20px ${p.color}` 
-              }} /> 
-            ))}
-            
+            {enemies.map(e => ( <div key={e.id} className="enemy" style={{ left: e.x, top: e.y }}><img src={e.kind.img} className="w-full h-full object-contain" /></div> ))}
+            {projectiles.map(p => ( <div key={p.id} className="projectile" style={{ left: p.x, top: p.y, background: p.color, boxShadow: `0 0 15px ${p.color}` }} /> ))}
             {effects.filter(ef=>ef.type==='waypoint').map(ef => ( <div key={ef.id} className="waypoint" style={{ left: ef.x, top: ef.y }} /> ))}
-            {dmgNumbers.map(d => ( <div key={d.id} className="dmg-num" style={{ left: d.x, top: d.y, color: d.color || 'var(--danger)' }}>{d.val}</div> ))}
-            
-            <div className="champion" style={{ left: pos.x, top: pos.y }}>
-              <img src={hero.img} className="w-full h-full object-contain" />
-            </div>
+            <div className="champion" style={{ left: pos.x, top: pos.y }}><img src={hero.img} className="w-full h-full object-contain" /><div className="champion-shadow" /></div>
           </div>
-          
           <div className="hud">
             {['Q','W','E','R','D','F'].map(k => (
               <div key={k} className={`skill-slot ${cds[k]===0?'ready':''}`}>
@@ -313,16 +215,7 @@
               </div>
             ))}
           </div>
-          
-          {phase === 'dead' && (
-            <div className="gameover-overlay">
-              <div className="bg-[#0c1120] border border-[#2a3354] p-12 rounded-lg text-center">
-                <h1 className="text-5xl font-bold mb-8 text-[#ff4d6d]">GAME OVER</h1>
-                <p className="text-2xl mb-8">SCORE: {score}</p>
-                <button className="bg-[#e8c547] text-black px-8 py-3 font-bold rounded cursor-pointer" onClick={()=>setPhase('select')}>RETRY</button>
-              </div>
-            </div>
-          )}
+          {phase === 'dead' && <div className="gameover-overlay"><div className="gameover-card"><h1 className="text-5xl font-bold mb-8">GAME OVER</h1><button className="restart-btn" onClick={()=>setPhase('select')}>RETRY</button></div></div>}
         </div>
       );
     };
