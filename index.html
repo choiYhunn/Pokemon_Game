@@ -11,24 +11,84 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    :root { --gold: #c89b3c; --blue: #005a82; --dark: #010a13; --text: #f0e6d2; --hp: #28ab44; }
-    body { background-color: var(--dark); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; user-select: none; }
-    .anniversary-glow { background: linear-gradient(to right, #c89b3c, #f0e6d2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(200, 155, 60, 0.5)); }
-    .map-arena { height: calc(100vh - 160px); background: radial-gradient(circle, #0f1217 0%, #010a13 100%); position: relative; cursor: crosshair; overflow: hidden; }
-    .bush { position: absolute; background: #05140a; border-radius: 50%; filter: blur(25px); opacity: 0.6; pointer-events: none; z-index: 5; }
-    .champion { position: absolute; width: 85px; height: 85px; transform: translate(-50%, -50%); transition: left 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), top 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.3s; z-index: 20; }
-    .stealth { opacity: 0.3; filter: brightness(0.4) saturate(0.5); }
-    .projectile { position: absolute; width: 20px; height: 20px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 15px var(--gold); z-index: 15; transition: transform 0.1s linear; }
-    .dummy { position: absolute; width: 60px; height: 60px; background: #32281e; border: 2px solid #5b5a56; border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 10; font-size: 10px; font-weight: bold; color: #a09b8c; transition: all 0.2s; }
-    .dummy.hit { background: #ff4d4d; border-color: white; transform: scale(1.2); }
+    :root { 
+      --gold: #c89b3c; --blue: #005a82; --dark: #010a13; --text: #f0e6d2; --hp: #28ab44; 
+    }
+    /* 마우스 커서 몬스터볼 설정 */
+    * { 
+      cursor: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png'), auto !important; 
+    }
     
-    .hud { height: 160px; background: #010a13; border-top: 3px solid #32281e; display: flex; justify-content: center; align-items: center; gap: 40px; position: relative; }
-    .skill-slot { width: 70px; height: 70px; background: #010a13; border: 2px solid #5b5a56; position: relative; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-    .skill-slot:hover { border-color: var(--gold); }
-    .skill-key { position: absolute; bottom: -24px; font-size: 12px; font-weight: 900; color: #a09b8c; }
-    .cd-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 22px; font-weight: 900; }
-    .score-board { position: absolute; top: 20px; right: 30px; font-family: 'Fraunces'; font-size: 24px; color: var(--gold); }
-    .slogan-banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 11px; tracking: 0.3em; opacity: 0.6; font-weight: bold; width: 100%; text-align: center; }
+    body { 
+      background-color: var(--dark); color: var(--text); font-family: 'Inter', sans-serif; 
+      margin: 0; overflow: hidden; user-select: none; 
+    }
+
+    .anniversary-glow { 
+      background: linear-gradient(to right, #c89b3c, #f0e6d2); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+      filter: drop-shadow(0 0 10px rgba(200, 155, 60, 0.5)); 
+    }
+
+    .map-arena { 
+      height: calc(100vh - 160px); 
+      background: radial-gradient(circle, #0f1217 0%, #010a13 100%); 
+      position: relative; overflow: hidden; 
+    }
+
+    /* 부쉬(은신처) */
+    .bush { 
+      position: absolute; background: #05140a; border-radius: 50%; 
+      filter: blur(30px); opacity: 0.6; pointer-events: none; z-index: 5; 
+    }
+
+    /* 챔피언 유닛 */
+    .champion { 
+      position: absolute; width: 100px; height: 100px; 
+      transform: translate(-50%, -50%); 
+      transition: left 0.3s ease-out, top 0.3s ease-out, opacity 0.3s; 
+      z-index: 20; 
+    }
+    .stealth { opacity: 0.3; filter: brightness(0.4) saturate(0.5); }
+
+    /* 투사체(Skill) */
+    .projectile { 
+      position: absolute; width: 25px; height: 25px; background: #fff; 
+      border-radius: 50%; box-shadow: 0 0 20px #5ecfff; z-index: 15; 
+    }
+
+    /* 타겟 더미 */
+    .dummy { 
+      position: absolute; width: 70px; height: 70px; background: #1a1a1a; 
+      border: 2px solid #333; border-radius: 12px; 
+      display: flex; flex-direction: column; align-items: center; justify-content: center; 
+      z-index: 10; font-size: 10px; font-weight: bold; color: #666; 
+      transition: transform 0.1s;
+    }
+    .dummy.hit { transform: scale(1.1); border-color: #ff4d4d; color: #ff4d4d; }
+
+    /* HUD */
+    .hud { 
+      height: 160px; background: #010a13; border-top: 3px solid #1e2328; 
+      display: flex; justify-content: center; align-items: center; gap: 40px; 
+      position: relative; z-index: 100;
+    }
+    .skill-slot { 
+      width: 75px; height: 75px; background: #010a13; border: 2px solid #5b5a56; 
+      position: relative; display: flex; align-items: center; justify-content: center; 
+    }
+    .skill-key { position: absolute; bottom: -24px; font-size: 12px; font-weight: 900; color: #c89b3c; }
+    .cd-overlay { 
+      position: absolute; inset: 0; background: rgba(0,0,0,0.8); 
+      display: flex; align-items: center; justify-content: center; 
+      color: white; font-size: 24px; font-weight: 900; 
+    }
+
+    .slogan-banner { 
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); 
+      font-size: 12px; letter-spacing: 0.3em; color: var(--gold); 
+      font-weight: 900; opacity: 0.8; text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -37,24 +97,19 @@
     const { useState, useEffect, useCallback, useRef } = React;
 
     const SLOGAN = "EVERY POKÉMON IS SOMEONE'S FAVORITE";
-    
-    // [기존 15종 멤버 복구 + 신규 멤버 통합]
+
+    // [DATA] 기존 멤버 15종 복구 + 확장 멤버
     const POKEMONS = [
-      { id: 25, name: "Pikachu", type: "Electric" }, { id: 133, name: "Eevee", type: "Normal" },
-      { id: 1, name: "Bulbasaur", type: "Grass" }, { id: 4, name: "Charmander", type: "Fire" },
-      { id: 7, name: "Squirtle", type: "Water" }, { id: 152, name: "Chikorita", type: "Grass" },
-      { id: 155, name: "Cyndaquil", type: "Fire" }, { id: 158, name: "Totodile", type: "Water" },
-      { id: 252, name: "Treecko", type: "Grass" }, { id: 255, name: "Torchic", type: "Fire" },
-      { id: 258, name: "Mudkip", type: "Water" }, { id: 387, name: "Turtwig", type: "Grass" },
-      { id: 390, name: "Chimchar", type: "Fire" }, { id: 393, name: "Piplup", type: "Water" },
-      { id: 150, name: "Mewtwo", type: "Psychic" }, { id: 6, name: "Charizard", type: "Fire/Fly" },
-      { id: 9, name: "Blastoise", type: "Water" }, { id: 3, name: "Venusaur", type: "Grass" },
-      { id: 448, name: "Lucario", type: "Fight/Steel" }, { id: 94, name: "Gengar", type: "Ghost" },
-      { id: 143, name: "Snorlax", type: "Normal" }, { id: 149, name: "Dragonite", type: "Dragon" },
-      { id: 282, name: "Gardevoir", type: "Psychic" }, { id: 130, name: "Gyarados", type: "Water/Fly" },
-      { id: 131, name: "Lapras", type: "Water/Ice" }, { id: 197, name: "Umbreon", type: "Dark" },
-      { id: 384, name: "Rayquaza", type: "Dragon/Fly" }, { id: 470, name: "Leafeon", type: "Grass" },
-      { id: 471, name: "Glaceon", type: "Ice" }, { id: 700, name: "Sylveon", type: "Fairy" }
+      { id: 25, name: "Pikachu" }, { id: 1, name: "Bulbasaur" }, { id: 4, name: "Charmander" },
+      { id: 7, name: "Squirtle" }, { id: 133, name: "Eevee" }, { id: 152, name: "Chikorita" },
+      { id: 155, name: "Cyndaquil" }, { id: 158, name: "Totodile" }, { id: 252, name: "Treecko" },
+      { id: 255, name: "Torchic" }, { id: 258, name: "Mudkip" }, { id: 387, name: "Turtwig" },
+      { id: 390, name: "Chimchar" }, { id: 393, name: "Piplup" }, { id: 150, name: "Mewtwo" },
+      { id: 6, name: "Charizard" }, { id: 9, name: "Blastoise" }, { id: 3, name: "Venusaur" },
+      { id: 448, name: "Lucario" }, { id: 94, name: "Gengar" }, { id: 143, name: "Snorlax" },
+      { id: 149, name: "Dragonite" }, { id: 282, name: "Gardevoir" }, { id: 130, name: "Gyarados" },
+      { id: 131, name: "Lapras" }, { id: 197, name: "Umbreon" }, { id: 384, name: "Rayquaza" },
+      { id: 470, name: "Leafeon" }, { id: 471, name: "Glaceon" }, { id: 700, name: "Sylveon" }
     ].map(p => ({
         ...p,
         img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`,
@@ -67,94 +122,98 @@
       const [isStealth, setIsStealth] = useState(false);
       const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
       const [projectiles, setProjectiles] = useState([]);
-      const [dummies, setDummies] = useState([
-        { id: 1, x: 300, y: 300, hp: 10 }, { id: 2, x: 1000, y: 200, hp: 10 }, { id: 3, x: 700, y: 500, hp: 10 }
-      ]);
       const [score, setScore] = useState(0);
-      const audioRef = useRef(null);
+      const [dummies, setDummies] = useState([
+        { id: 1, x: 400, y: 300, hp: 5 }, { id: 2, x: 1000, y: 200, hp: 5 }, { id: 3, x: 800, y: 550, hp: 5 }
+      ]);
 
-      const BUSHES = [{x: 200, y: 200, r: 100}, {x: 1100, y: 400, r: 130}];
+      const BUSHES = [{x: 200, y: 250, r: 120}, {x: 1100, y: 450, r: 150}];
 
       const selectHero = (p) => {
-        setHero(p);
         const audio = new Audio(p.cry);
-        audio.volume = 0.4;
-        audio.play();
+        audio.volume = 0.3;
+        audio.play().catch(() => {}); // 브라우저 정책 대응
+        setHero(p);
       };
 
-      const handleMove = (e) => {
-        const nx = e.clientX; const ny = e.clientY;
+      const handleArenaClick = (e) => {
+        const nx = e.clientX;
+        const ny = e.clientY;
         setPos({ x: nx, y: ny });
-        const hidden = BUSHES.some(b => Math.sqrt(Math.pow(nx - b.x, 2) + Math.pow(ny - b.y, 2)) < b.r);
-        setIsStealth(hidden);
+        
+        // 부쉬 체크
+        const inBush = BUSHES.some(b => Math.sqrt(Math.pow(nx - b.x, 2) + Math.pow(ny - b.y, 2)) < b.r);
+        setIsStealth(inBush);
       };
 
-      const fireProjectile = useCallback((type) => {
-        const newProj = {
-          id: Date.now(),
-          x: pos.x,
-          y: pos.y,
-          vx: 15,
-          range: type === 'R' ? 2000 : 600,
-          dist: 0,
-          type: type
-        };
-        setProjectiles(prev => [...prev, newProj]);
-      }, [pos]);
+      const castSkill = useCallback((k) => {
+        const cooldownTimes = { Q: 3, W: 4, E: 6, R: 25, D: 120, F: 100 };
+        if (cds[k] > 0) return;
 
-      const useAbility = useCallback((k) => {
-        const timers = { Q: 3, W: 5, E: 7, R: 30, D: 120, F: 100 };
-        if (timers[k] && cds[k] === 0) {
-          setCds(p => ({ ...p, [k]: timers[k] }));
-          if (k === 'Q' || k === 'R') fireProjectile(k);
-          if (k === 'W') { // Dash
-             setPos(prev => ({ x: prev.x + 200, y: prev.y })); // 단순 구현
-          }
+        setCds(prev => ({ ...prev, [k]: cooldownTimes[k] }));
+
+        if (k === 'Q') { // Bolt Projectile
+          const newProj = { id: Date.now(), x: pos.x, y: pos.y, vx: 12, range: 700, dist: 0 };
+          setProjectiles(prev => [...prev, newProj]);
         }
-      }, [cds, fireProjectile]);
+        if (k === 'W') { // Dash
+           // 마우스 방향 대쉬 로직 (단순 구현)
+           setPos(prev => ({ x: prev.x + 150, y: prev.y }));
+        }
+      }, [cds, pos]);
 
       useEffect(() => {
-        const kd = (e) => useAbility(e.key.toUpperCase());
-        window.addEventListener('keydown', kd);
-        return () => window.removeEventListener('keydown', kd);
-      }, [useAbility]);
+        const onKey = (e) => castSkill(e.key.toUpperCase());
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, [castSkill]);
 
-      // Game Loop: Projectile Physics & Collision
+      // Game Loop (Physics & Cleanup)
       useEffect(() => {
-        const loop = setInterval(() => {
-          setProjectiles(prev => prev.map(p => ({ ...p, x: p.x + p.vx, dist: p.dist + p.vx })).filter(p => p.dist < p.range));
-          
+        const timer = setInterval(() => {
+          // Projectile Move
+          setProjectiles(prev => prev
+            .map(p => ({ ...p, x: p.x + p.vx, dist: p.dist + p.vx }))
+            .filter(p => p.dist < p.range)
+          );
+
           // Collision Detection
           setDummies(prevD => prevD.map(d => {
             const hit = projectiles.some(p => Math.sqrt(Math.pow(p.x - d.x, 2) + Math.pow(p.y - d.y, 2)) < 40);
             if (hit) {
-                setScore(s => s + 10);
-                return { ...d, hit: true, hp: d.hp - 1 };
+              setScore(s => s + 50);
+              return { ...d, hit: true, hp: d.hp - 1 };
             }
             return { ...d, hit: false };
           }));
 
+          // Cooldown Update
           setCds(prev => {
             const next = { ...prev };
-            let updated = false;
-            Object.keys(next).forEach(k => { if(next[k] > 0) { next[k] = Math.max(0, next[k] - 0.05); updated = true; } });
-            return updated ? next : prev;
+            let active = false;
+            Object.keys(next).forEach(k => {
+              if (next[k] > 0) {
+                next[k] = Math.max(0, next[k] - 0.1);
+                active = true;
+              }
+            });
+            return active ? next : prev;
           });
-        }, 50);
-        return () => clearInterval(loop);
+        }, 100);
+        return () => clearInterval(timer);
       }, [projectiles]);
 
       if (!hero) return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-[#010a13] overflow-y-auto">
-          <div className="text-center mb-10">
+        <div className="min-h-screen bg-[#010a13] p-10 flex flex-col items-center overflow-y-auto">
+          <div className="text-center mb-12">
             <h1 className="text-6xl font-black anniversary-glow italic mb-4">30th ANNIVERSARY</h1>
-            <p className="text-xs tracking-[0.5em] text-[#c89b3c] font-bold opacity-80">{SLOGAN}</p>
+            <p className="text-[10px] tracking-[0.5em] text-[#c89b3c] font-bold uppercase">{SLOGAN}</p>
           </div>
-          <div className="grid grid-cols-6 gap-4 max-w-6xl pb-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-6xl w-full">
             {POKEMONS.map(p => (
-              <div key={p.id} onClick={() => selectHero(p)} className="group cursor-pointer border border-[#1e2328] hover:border-[#c89b3c] bg-[#0a0e13] p-3 rounded transition-all">
-                <img src={p.img} className="w-20 h-20 object-contain group-hover:scale-110 transition-transform" />
-                <p className="text-center mt-2 text-[10px] font-black opacity-40 group-hover:opacity-100">{p.name.toUpperCase()}</p>
+              <div key={p.id} onClick={() => selectHero(p)} className="group cursor-pointer border border-[#1e2328] hover:border-[#c89b3c] bg-[#0a0e13] p-4 rounded-md transition-all flex flex-col items-center">
+                <img src={p.img} className="w-24 h-24 object-contain group-hover:scale-110 transition-transform" />
+                <span className="mt-3 text-[10px] font-black opacity-40 group-hover:opacity-100 uppercase tracking-tighter">{p.name}</span>
               </div>
             ))}
           </div>
@@ -163,44 +222,47 @@
 
       return (
         <div className="h-screen flex flex-col">
-          <div className="map-arena" onClick={handleMove}>
-            <div className="slogan-banner text-[#c89b3c]">{SLOGAN}</div>
-            <div className="score-board">SCORE: {score}</div>
-            <div className="absolute top-10 left-10">
-                <h2 className="text-2xl font-black anniversary-glow italic uppercase">{hero.name} Arena</h2>
-                <p className="text-[10px] text-[#5b5a56] font-bold mt-1">HOTKEYS: Q (SHOT) / W (DASH) / E (AoE) / R (ULT)</p>
+          <div className="map-arena" onClick={handleArenaClick}>
+            <div className="slogan-banner">{SLOGAN}</div>
+            
+            <div className="absolute top-10 left-10 z-50">
+              <h2 className="text-3xl font-black anniversary-glow italic uppercase tracking-tighter">{hero.name} Arena</h2>
+              <div className="text-[#5b5a56] font-black text-xs mt-1">SCORE: {score}</div>
             </div>
 
-            {BUSHES.map((b, i) => <div key={i} className="bush" style={{ left: b.x-b.r, top: b.y-b.r, width: b.r*2, height: b.r*2 }} />)}
-            
+            {BUSHES.map((b, i) => (
+              <div key={i} className="bush" style={{ left: b.x-b.r, top: b.y-b.r, width: b.r*2, height: b.r*2 }} />
+            ))}
+
             {dummies.map(d => (
               <div key={d.id} className={`dummy ${d.hit ? 'hit' : ''}`} style={{ left: d.x, top: d.y }}>
-                TARGET<br/>HP: {d.hp}
+                <span className="opacity-40">TARGET</span>
+                <span className="text-[12px] text-white">HP: {d.hp}</span>
               </div>
             ))}
 
             {projectiles.map(p => (
-              <div key={p.id} className="projectile" style={{ left: p.x, top: p.y, transform: p.type === 'R' ? 'scale(3)' : 'scale(1)' }} />
+              <div key={p.id} className="projectile" style={{ left: p.x, top: p.y }} />
             ))}
 
             <div className={`champion ${isStealth ? 'stealth' : ''}`} style={{ left: pos.x, top: pos.y }}>
-              <img src={hero.img} className="w-full h-full drop-shadow-[0_0_20px_rgba(200,155,60,0.6)]" />
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-black border border-white/20"><div className="h-full bg-[#28ab44]" style={{width:'100%'}}/></div>
+               <img src={hero.img} className="w-full h-full drop-shadow-[0_0_20px_rgba(200,155,60,0.6)]" />
+               <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black/80 px-3 border border-[#c89b3c]/40 rounded text-[9px] font-black">{hero.name.toUpperCase()}</div>
             </div>
           </div>
 
           <div className="hud">
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               {['Q', 'W', 'E', 'R'].map(k => (
-                <div key={k} className="skill-slot">
+                <div key={k} className="skill-slot border-[#32281e]">
                   <span className={`text-2xl font-black italic ${k==='R' ? 'text-white' : 'text-[#c89b3c]'}`}>{k}</span>
-                  <span className="skill-key">{k==='R' ? 'ULTIMATE' : 'ABILITY'}</span>
+                  <span className="skill-key">{k==='R' ? 'ULT' : 'ABI'}</span>
                   {cds[k] > 0 && <div className="cd-overlay">{Math.ceil(cds[k])}</div>}
                 </div>
               ))}
             </div>
-            <div className="w-[2px] h-14 bg-[#32281e]" />
-            <div className="flex gap-3">
+            <div className="w-[2px] h-14 bg-[#1e2328]" />
+            <div className="flex gap-4">
               {['D', 'F'].map(k => (
                 <div key={k} className="skill-slot border-[#005a82]">
                   <span className="text-2xl font-black italic text-white">{k}</span>
@@ -209,9 +271,9 @@
                 </div>
               ))}
             </div>
-            <div className="ml-10 flex flex-col items-center">
-                <img src={BALLS.master} className="w-14 h-14" />
-                <span className="text-[9px] font-black mt-1 text-[#5b5a56]">READY</span>
+            <div className="flex flex-col items-center ml-10">
+               <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" className="w-14 h-14" />
+               <span className="text-[8px] font-black text-[#5b5a56] mt-1">MASTER READY</span>
             </div>
           </div>
         </div>
