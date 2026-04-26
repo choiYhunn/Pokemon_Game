@@ -20,320 +20,111 @@
       --text: #e8eef7;
       --muted: #6b7790;
       --hp: #4ade80;
-      --xp: #5ecfff;
     }
 
-    /* 마스터볼 커서 적용 */
-    html, body, * {
-      cursor: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png'), crosshair !important;
-    }
+    html, body, * { cursor: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png'), crosshair !important; }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--bg); color: var(--text);
       font-family: 'Space Grotesk', system-ui, sans-serif;
-      margin: 0;
-      overflow: hidden;
-      user-select: none;
+      margin: 0; overflow: hidden; user-select: none;
     }
 
     .mono { font-family: 'JetBrains Mono', monospace; }
 
     .accent-glow {
       background: linear-gradient(90deg, #e8c547 0%, #fff4c0 50%, #e8c547 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 0 14px rgba(232, 197, 71, 0.45));
     }
 
     .map-arena {
       height: calc(100vh - 140px);
-      background:
-        radial-gradient(ellipse at 30% 20%, rgba(94, 207, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(232, 197, 71, 0.05) 0%, transparent 50%),
-        radial-gradient(circle, #0a0f1c 0%, #060912 100%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Hex grid floor */
-    .grid-floor {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(94, 207, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(94, 207, 255, 0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-    }
-
-    .vignette {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
-    }
-
-    .bush {
-      position: absolute;
-      background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    /* Champion */
-    .champion {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      transform: translate(-50%, -50%);
-      transition: opacity 0.2s;
-      z-index: 25;
-      will-change: left, top;
-    }
-    .champion.stealth { opacity: 0.35; filter: brightness(0.5) saturate(0.4); }
-    .champion.invuln {
-      filter: drop-shadow(0 0 25px rgba(94, 207, 255, 1));
-      opacity: 0.7;
-    }
-
-    .champion-shadow {
-      position: absolute;
-      bottom: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70px; height: 14px;
-      background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
-    }
-
-    .champion-ring {
-      position: absolute;
-      inset: -10px;
-      border: 2px solid rgba(232, 197, 71, 0.4);
-      border-radius: 50%;
-      animation: pulse-ring 2s ease-in-out infinite;
-      z-index: -1;
-    }
-    @keyframes pulse-ring {
-      0%, 100% { transform: scale(1); opacity: 0.4; }
-      50% { transform: scale(1.08); opacity: 0.8; }
-    }
-
-    /* Projectile */
-    .projectile {
-      position: absolute;
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      z-index: 15;
-      pointer-events: none;
-    }
-
-    /* Waypoint & Heal Ring */
-    .waypoint {
-      position: absolute; transform: translate(-50%, -50%);
-      width: 30px; height: 30px; border: 3px solid #4ade80;
-      border-radius: 50%; animation: waypoint-pulse 0.4s ease-out forwards; pointer-events: none;
-    }
-    @keyframes waypoint-pulse {
-      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; border-width: 6px; }
-      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; border-width: 1px; }
-    }
-
-    .heal-ring {
-      position: absolute; transform: translate(-50%, -50%);
-      border-radius: 50%; border: 6px solid #4ade80;
-      animation: heal-pulse 0.8s ease-out forwards; pointer-events: none; z-index: 20;
-    }
-    @keyframes heal-pulse {
-      0% { width: 40px; height: 40px; opacity: 1; border-width: 12px; }
-      100% { width: 200px; height: 200px; opacity: 0; border-width: 1px; }
-    }
-
-    /* Enemy */
-    .enemy {
-      position: absolute;
-      width: 70px; height: 70px;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      transition: filter 0.1s;
-      will-change: left, top;
-      pointer-events: none;
-    }
-    .enemy.hit { filter: brightness(2) saturate(0) drop-shadow(0 0 10px var(--danger)); }
-    .enemy-aura {
-      position: absolute;
-      inset: -6px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 77, 109, 0.25) 0%, transparent 70%);
-      z-index: -1;
-    }
-
-    /* Damage number */
-    .dmg-num {
-      position: absolute;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 900;
-      font-size: 20px;
-      text-shadow: 0 3px 6px rgba(0,0,0,0.9);
-      animation: dmg-rise 0.8s ease-out forwards;
-      z-index: 30;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-    @keyframes dmg-rise {
-      0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
-      20% { transform: translate(-50%, -80%) scale(1.2); opacity: 1; }
-      100% { transform: translate(-50%, -180%) scale(0.9); opacity: 0; }
-    }
-
-    /* AOE ring */
-    .aoe-ring {
-      position: absolute;
-      border-radius: 50%;
-      animation: aoe-expand 0.5s ease-out forwards;
-      z-index: 18;
-      pointer-events: none;
-    }
-    @keyframes aoe-expand {
-      0% { width: 20px; height: 20px; opacity: 1; }
-      100% { width: 360px; height: 360px; opacity: 0; }
-    }
-
-    /* Ult flash */
-    .ult-flash {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(232, 197, 71, 0.4) 50%, transparent 100%);
-      animation: ult-flash 0.8s ease-out forwards;
-      z-index: 50;
-      pointer-events: none;
-    }
-    @keyframes ult-flash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
-
-    /* Hit flash on player */
-    .player-hurt {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle, transparent 60%, rgba(255, 77, 109, 0.35) 100%);
-      animation: hurt-flash 0.4s ease-out forwards;
-      z-index: 40;
-      pointer-events: none;
-    }
-    @keyframes hurt-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
-
-    /* HUD */
-    .hud {
-      height: 140px;
-      background: linear-gradient(180deg, #060912 0%, #0c1120 100%);
-      border-top: 1px solid #1a2138;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 32px;
-      position: relative;
-      z-index: 100;
-    }
-    .skill-slot {
-      width: 72px; height: 72px; background: #060912;
-      border: 1px solid #2a3354; border-radius: 6px;
-      position: relative; display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
-    .skill-slot.ready { box-shadow: 0 0 12px rgba(255,255,255,0.1); border-color: #fff; }
-    .cd-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,0.85);
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 22px; font-weight: 700;
-      font-family: 'JetBrains Mono', monospace; border-radius: 6px;
-    }
-
-    .top-banner {
-      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-      font-size: 11px; letter-spacing: 0.4em; color: var(--accent);
-      font-weight: 700; text-align: center; z-index: 50;
-    }
-
-    /* HP bar */
-    .hp-bar-outer {
-      width: 360px; height: 22px; background: #060912;
-      border: 1px solid #2a3354; border-radius: 4px;
+      background: radial-gradient(ellipse at 30% 20%, rgba(94, 207, 255, 0.06) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, rgba(232, 197, 71, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle, #0a0f1c 0%, #060912 100%);
       position: relative; overflow: hidden;
     }
-    .hp-bar-inner {
-      height: 100%; background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
-      transition: width 0.25s ease-out; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 0 8px rgba(74, 222, 128, 0.4);
+
+    .grid-floor {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(94, 207, 255, 0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(94, 207, 255, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none;
     }
+
+    .champion {
+      position: absolute; width: 100px; height: 100px; transform: translate(-50%, -50%);
+      transition: opacity 0.2s; z-index: 25; will-change: left, top;
+    }
+    .champion.invuln { filter: drop-shadow(0 0 25px rgba(94, 207, 255, 1)); opacity: 0.7; }
+    .champion-shadow {
+      position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+      width: 70px; height: 14px; background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
+    }
+
+    .projectile { position: absolute; border-radius: 50%; z-index: 15; pointer-events: none; }
+    .enemy-projectile { position: absolute; border-radius: 50%; z-index: 14; pointer-events: none; }
+
+    .waypoint {
+      position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px;
+      border: 3px solid #4ade80; border-radius: 50%; animation: waypoint-pulse 0.4s ease-out forwards; pointer-events: none;
+    }
+    @keyframes waypoint-pulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; border-width: 6px; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; border-width: 1px; } }
+
+    .enemy {
+      position: absolute; width: 70px; height: 70px; transform: translate(-50%, -50%);
+      z-index: 10; transition: filter 0.1s; will-change: left, top; pointer-events: none;
+    }
+    .enemy.hit { filter: brightness(2) saturate(0) drop-shadow(0 0 10px var(--danger)); }
+    .enemy-hp-bar { position: absolute; top: -10px; left: 10%; width: 80%; height: 4px; background: #333; border-radius: 2px; }
+    .enemy-hp-fill { height: 100%; background: #ff4d6d; border-radius: 2px; transition: width 0.1s; }
+
+    .dmg-num {
+      position: absolute; font-family: 'JetBrains Mono', monospace; font-weight: 900; font-size: 20px;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.9); animation: dmg-rise 0.8s ease-out forwards;
+      z-index: 30; transform: translate(-50%, -50%); pointer-events: none;
+    }
+    @keyframes dmg-rise { 0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; } 20% { transform: translate(-50%, -80%) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -180%) scale(0.9); opacity: 0; } }
+
+    .aoe-ring { position: absolute; border-radius: 50%; animation: aoe-expand 0.5s ease-out forwards; z-index: 18; pointer-events: none; }
+    @keyframes aoe-expand { 0% { width: 20px; height: 20px; opacity: 1; } 100% { width: 360px; height: 360px; opacity: 0; } }
+
+    .ult-flash { position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(232, 197, 71, 0.4) 50%, transparent 100%); animation: ult-flash 0.8s ease-out forwards; z-index: 50; pointer-events: none; }
+    @keyframes ult-flash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+
+    .player-hurt { position: absolute; inset: 0; background: radial-gradient(circle, transparent 60%, rgba(255, 77, 109, 0.4) 100%); animation: hurt-flash 0.4s ease-out forwards; z-index: 40; pointer-events: none; }
+    @keyframes hurt-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+
+    .hud { height: 140px; background: linear-gradient(180deg, #060912 0%, #0c1120 100%); border-top: 1px solid #1a2138; display: flex; justify-content: center; align-items: center; gap: 32px; position: relative; z-index: 100; }
+    .skill-slot { width: 72px; height: 72px; background: #060912; border: 1px solid #2a3354; border-radius: 6px; position: relative; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .skill-slot.ready { box-shadow: 0 0 12px rgba(255,255,255,0.1); border-color: #fff; }
+    .cd-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; border-radius: 6px; }
+
+    .hp-bar-outer { width: 360px; height: 22px; background: #060912; border: 1px solid #2a3354; border-radius: 4px; position: relative; overflow: hidden; }
+    .hp-bar-inner { height: 100%; background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%); transition: width 0.25s ease-out; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 0 8px rgba(74, 222, 128, 0.4); }
     .hp-bar-inner.low { background: linear-gradient(90deg, #ff4d6d 0%, #c81d3a 100%); }
-    .hp-bar-inner.med { background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%); }
 
-    /* Wave bar */
-    .wave-bar {
-      width: 240px; height: 6px; background: #1a2138;
-      border-radius: 3px; overflow: hidden; margin-top: 6px;
-    }
-    .wave-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width 0.3s linear; }
+    .wave-announce { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); text-align: center; z-index: 60; pointer-events: none; animation: wave-in 2.4s ease-out forwards; }
+    @keyframes wave-in { 0% { opacity: 0; transform: translate(-50%, -20px) scale(0.8); } 15%, 70% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, 0) scale(1.05); } }
 
-    /* Hero card */
-    .hero-card { position: relative; transition: all 0.2s; overflow: hidden; }
-    .hero-card:hover { transform: translateY(-2px); border-color: var(--accent) !important; }
-
-    /* Wave banner */
-    .wave-announce {
-      position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
-      text-align: center; z-index: 60; pointer-events: none;
-      animation: wave-in 2.4s ease-out forwards;
-    }
-    @keyframes wave-in {
-      0% { opacity: 0; transform: translate(-50%, -20px) scale(0.8); }
-      15%, 70% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, 0) scale(1.05); }
-    }
-
-    /* Game over modal */
-    .gameover-overlay {
-      position: absolute; inset: 0; background: rgba(6, 9, 18, 0.92);
-      backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
-      z-index: 200; animation: fade-in 0.4s ease-out;
-    }
+    .gameover-overlay { position: absolute; inset: 0; background: rgba(6, 9, 18, 0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fade-in 0.4s ease-out; }
     @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .gameover-card { background: linear-gradient(180deg, #0c1120 0%, #060912 100%); border: 1px solid #2a3354; padding: 48px 64px; border-radius: 8px; text-align: center; box-shadow: 0 20px 80px rgba(0,0,0,0.8); min-width: 480px; }
+    .restart-btn { background: var(--accent); color: #060912; padding: 14px 36px; font-weight: 700; letter-spacing: 0.2em; border-radius: 4px; border: none; cursor: pointer; transition: 0.15s; }
+    .restart-btn:hover { background: #fff4c0; transform: translateY(-1px); }
 
-    .gameover-card {
-      background: linear-gradient(180deg, #0c1120 0%, #060912 100%);
-      border: 1px solid #2a3354; padding: 48px 64px; border-radius: 8px;
-      text-align: center; box-shadow: 0 20px 80px rgba(0,0,0,0.8); min-width: 480px;
-    }
-
-    .restart-btn {
-      background: var(--accent); color: #060912; padding: 14px 36px;
-      font-weight: 700; letter-spacing: 0.2em; border-radius: 4px; border: none;
-      transition: all 0.15s; font-family: 'Space Grotesk';
-    }
-    .restart-btn:hover { background: #fff4c0; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(232, 197, 71, 0.4); }
-
-    .scanline {
-      position: absolute; inset: 0; pointer-events: none; z-index: 90;
-      background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px);
-    }
-
-    @keyframes enemy-bob {
-      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-      50% { transform: translate(-50%, -50%) translateY(-3px); }
-    }
-    .enemy-img { animation: enemy-bob 1.2s ease-in-out infinite; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.8)); }
+    .enemy-img { filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.8)); }
     .hero-img-display { filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.8)); }
-    .corner-bracket { position: absolute; width: 18px; height: 18px; border: 1px solid var(--accent); }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect, useCallback, useRef, useMemo } = React;
+    const { useState, useEffect, useCallback, useRef } = React;
 
     const SLOGAN = "EVERY POKÉMON IS SOMEONE'S FAVORITE";
 
-    // 30종 포켓몬 데이터 (PokeAPI 연동)
     const HEROES = [
       { id: 25, name: "Pikachu", arch: "Electric", color: "#fde047" },
       { id: 1, name: "Bulbasaur", arch: "Grass", color: "#4ade80" },
@@ -371,76 +162,67 @@
         cry: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/cries/latest/${p.id}.ogg`
     }));
 
-    // 무작위 야생 포켓몬 (적)
+    // 적(야생 포켓몬) 속성 부여: 불규칙성(erratic), 속도, 공격방식
     const WILD_POKEMONS = [
-      { id: 19, name: 'Rattata' }, { id: 41, name: 'Zubat' }, { id: 109, name: 'Koffing' },
-      { id: 52, name: 'Meowth' }, { id: 23, name: 'Ekans' }
+      { id: 19, name: 'Rattata', type: 'melee', hp: 90, speed: 4.0, damage: 15, erratic: 2.5, color: '#a09b8c' },
+      { id: 41, name: 'Zubat', type: 'ranged', hp: 70, speed: 2.8, damage: 10, erratic: 6.0, color: '#a78bfa' },
+      { id: 109, name: 'Koffing', type: 'ranged', hp: 150, speed: 2.0, damage: 20, erratic: 1.5, color: '#f472b6' },
+      { id: 52, name: 'Meowth', type: 'melee', hp: 100, speed: 3.5, damage: 12, erratic: 4.0, color: '#fde047' },
+      { id: 23, name: 'Ekans', type: 'ranged', hp: 110, speed: 2.5, damage: 15, erratic: 3.0, color: '#a78bfa' }
     ].map(p => ({
         ...p,
         img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`
     }));
 
-    // 스펠 정의 (D, F)
     const SPELL_DEFS = {
-      D: { name: 'FLASH', desc: 'Instant blink to aim', cd: 10.0, color: '#e8c547' },
+      D: { name: 'FLASH', desc: 'Instant blink', cd: 10.0, color: '#e8c547' },
       F: { name: 'HEAL', desc: 'Restore 40 HP', cd: 15.0, color: '#4ade80' }
     };
 
-    // 타입별 고유 스킬셋 생성기 (크리에이티브 기믹 포함)
     const getSkillSet = (arch) => {
       const type = arch.split('/')[0];
       switch(type) {
           case 'Electric': return {
-              Q: { name: 'THUNDER SHOCK', desc: 'Fast bolt', cd: 0.8, color: '#fde047', projSpeed: 22, damage: 25 },
+              Q: { name: 'THUNDER SHOCK', desc: 'Fast bolt', cd: 0.8, color: '#fde047', projSpeed: 24, damage: 30 },
               W: { name: 'VOLT SWITCH', desc: 'Dash + Invuln', cd: 4.0 },
               E: { name: 'DISCHARGE', desc: 'AOE stun ring', cd: 5.0, radius: 200, color: '#fde047' },
-              R: { name: 'THUNDERSTORM', desc: 'Total wipe', cd: 20.0 }
+              R: { name: 'THUNDERSTORM', desc: 'Distance Blast', cd: 15.0 }
           };
           case 'Fire': return {
-              Q: { name: 'FLAMETHROWER', desc: 'Piercing flame', cd: 1.5, color: '#fb923c', projSpeed: 14, damage: 45, pierce: true, scale: 1.5 },
+              Q: { name: 'FLAMETHROWER', desc: 'Piercing flame', cd: 1.5, color: '#fb923c', projSpeed: 16, damage: 50, pierce: true, scale: 1.5 },
               W: { name: 'FLAME CHARGE', desc: 'Dash + Invuln', cd: 5.0 },
               E: { name: 'FIRE SPIN', desc: 'AOE burst', cd: 6.0, radius: 180, color: '#fb923c' },
-              R: { name: 'BLAST BURN', desc: 'Total wipe', cd: 22.0 }
+              R: { name: 'BLAST BURN', desc: 'Distance Blast', cd: 16.0 }
           };
           case 'Grass': return {
-              Q: { name: 'RAZOR LEAF', desc: 'Triple spread', cd: 1.2, color: '#4ade80', projSpeed: 16, damage: 20, multi: 3 },
+              Q: { name: 'RAZOR LEAF', desc: 'Triple spread', cd: 1.2, color: '#4ade80', projSpeed: 18, damage: 25, multi: 3 },
               W: { name: 'SYNTHESIS', desc: 'Dash + Invuln', cd: 4.0 },
               E: { name: 'SOLAR BEAM', desc: 'AOE burst', cd: 6.0, radius: 220, color: '#4ade80' },
-              R: { name: 'FRENZY PLANT', desc: 'Total wipe', cd: 22.0 }
+              R: { name: 'FRENZY PLANT', desc: 'Distance Blast', cd: 16.0 }
           };
           case 'Water': return {
-              Q: { name: 'WATER GUN', desc: 'Rapid stream', cd: 0.6, color: '#38bdf8', projSpeed: 18, damage: 18, pierce: true },
+              Q: { name: 'WATER GUN', desc: 'Rapid stream', cd: 0.6, color: '#38bdf8', projSpeed: 20, damage: 20, pierce: true },
               W: { name: 'AQUA JET', desc: 'Dash + Invuln', cd: 3.5 },
               E: { name: 'SURF', desc: 'Huge AOE', cd: 6.0, radius: 250, color: '#38bdf8' },
-              R: { name: 'HYDRO PUMP', desc: 'Total wipe', cd: 20.0 }
+              R: { name: 'HYDRO PUMP', desc: 'Distance Blast', cd: 15.0 }
           };
           case 'Psychic': return {
-              Q: { name: 'PSYBEAM', desc: 'Homing ball', cd: 1.0, color: '#e879f9', projSpeed: 12, damage: 35, homing: true, scale: 1.2 },
+              Q: { name: 'PSYBEAM', desc: 'Homing ball', cd: 1.0, color: '#e879f9', projSpeed: 14, damage: 40, homing: true, scale: 1.2 },
               W: { name: 'TELEPORT', desc: 'Dash + Invuln', cd: 3.0 },
               E: { name: 'CONFUSION', desc: 'AOE burst', cd: 5.0, radius: 200, color: '#e879f9' },
-              R: { name: 'PSYSTRIKE', desc: 'Total wipe', cd: 18.0 }
-          };
-          case 'Dragon': return {
-              Q: { name: 'DRAGON CLAW', desc: 'Heavy slash', cd: 1.5, color: '#f472b6', projSpeed: 25, damage: 60, scale: 2.0 },
-              W: { name: 'DRAGON DANCE', desc: 'Dash + Invuln', cd: 4.0 },
-              E: { name: 'OUTRAGE', desc: 'Massive AOE', cd: 7.0, radius: 300, color: '#f472b6' },
-              R: { name: 'DRACO METEOR', desc: 'Total wipe', cd: 25.0 }
+              R: { name: 'PSYSTRIKE', desc: 'Distance Blast', cd: 14.0 }
           };
           default: return {
-              Q: { name: 'SWIFT', desc: 'Directional star', cd: 1.0, color: '#cbd5e1', projSpeed: 16, damage: 30 },
+              Q: { name: 'SWIFT', desc: 'Directional star', cd: 1.0, color: '#cbd5e1', projSpeed: 18, damage: 35 },
               W: { name: 'QUICK ATTACK', desc: 'Dash + Invuln', cd: 4.0 },
               E: { name: 'HYPER VOICE', desc: 'AOE burst', cd: 6.0, radius: 180, color: '#cbd5e1' },
-              R: { name: 'HYPER BEAM', desc: 'Total wipe', cd: 22.0 }
+              R: { name: 'HYPER BEAM', desc: 'Distance Blast', cd: 18.0 }
           };
       }
     };
 
     const MAX_HP = 100;
     const PLAYER_RADIUS = 30;
-    const HIT_RADIUS = 38;
-    const ENEMY_BASE_SPEED = 1.6;
-    const ENEMY_HIT_DMG = 12;
-
     const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
     const rand = (a, b) => a + Math.random() * (b - a);
     const choice = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -449,7 +231,7 @@
       const [hero, setHero] = useState(null);
       const [phase, setPhase] = useState('select');
       const [pos, setPos] = useState({ x: 0, y: 0 });
-      const [targetPos, setTargetPos] = useState({ x: 0, y: 0 }); // 이동 목표 지점
+      const [targetPos, setTargetPos] = useState({ x: 0, y: 0 });
       const [aim, setAim] = useState({ x: 1, y: 0 });
       const [hp, setHp] = useState(MAX_HP);
       const [score, setScore] = useState(0);
@@ -458,6 +240,7 @@
       const [waveAnnounce, setWaveAnnounce] = useState(null);
       const [enemies, setEnemies] = useState([]);
       const [projectiles, setProjectiles] = useState([]);
+      const [enemyProjectiles, setEnemyProjectiles] = useState([]);
       const [effects, setEffects] = useState([]);
       const [dmgNumbers, setDmgNumbers] = useState([]);
       const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
@@ -484,16 +267,13 @@
       useEffect(() => { waveRef.current = wave; }, [wave]);
       useEffect(() => { phaseRef.current = phase; }, [phase]);
 
-      // 조준용 마우스 추적
       useEffect(() => {
         const onMove = (e) => {
           if (!arenaRef.current || phaseRef.current !== 'playing') return;
           const rect = arenaRef.current.getBoundingClientRect();
-          const mx = e.clientX - rect.left;
-          const my = e.clientY - rect.top;
+          const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
           const p = posRef.current;
-          const dx = mx - p.x;
-          const dy = my - p.y;
+          const dx = mx - p.x; const dy = my - p.y;
           const len = Math.hypot(dx, dy) || 1;
           setAim({ x: dx / len, y: dy / len });
         };
@@ -502,75 +282,54 @@
       }, []);
 
       useEffect(() => {
-        const measure = () => {
-          if (arenaRef.current) {
-            const r = arenaRef.current.getBoundingClientRect();
-            arenaSizeRef.current = { w: r.width, h: r.height };
-          }
-        };
-        measure();
-        window.addEventListener('resize', measure);
-        return () => window.removeEventListener('resize', measure);
+        const measure = () => { if (arenaRef.current) { arenaSizeRef.current = { w: arenaRef.current.getBoundingClientRect().width, h: arenaRef.current.getBoundingClientRect().height }; } };
+        measure(); window.addEventListener('resize', measure); return () => window.removeEventListener('resize', measure);
       }, [phase]);
 
-      // 게임 시작 시 중앙 배치
       useEffect(() => {
         if (phase === 'playing') {
           const { w, h } = arenaSizeRef.current;
-          setPos({ x: w / 2, y: h / 2 });
-          posRef.current = { x: w / 2, y: h / 2 };
-          setTargetPos({ x: w / 2, y: h / 2 });
-          targetPosRef.current = { x: w / 2, y: h / 2 };
+          setPos({ x: w / 2, y: h / 2 }); posRef.current = { x: w / 2, y: h / 2 };
+          setTargetPos({ x: w / 2, y: h / 2 }); targetPosRef.current = { x: w / 2, y: h / 2 };
           waveStartRef.current = Date.now();
         }
       }, [phase]);
 
       const startGame = (h) => {
-        const audio = new Audio(h.cry);
-        audio.volume = 0.3;
-        audio.play().catch(() => {});
+        new Audio(h.cry).play().catch(() => {});
         setHero(h); setHp(MAX_HP); setScore(0); setWave(1); setWaveProgress(0);
-        setEnemies([]); setProjectiles([]); setEffects([]); setDmgNumbers([]);
+        setEnemies([]); setProjectiles([]); setEnemyProjectiles([]); setEffects([]); setDmgNumbers([]);
         setCds({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
         setInvuln(false); setPhase('playing'); setWaveAnnounce({ id: Date.now(), n: 1 });
       };
 
       const restart = () => { setPhase('select'); setHero(null); };
 
-      // 클릭 투 무브 (Click-to-Move) 핸들러
       const onArenaClick = (e) => {
         if (phaseRef.current !== 'playing') return;
         const rect = arenaRef.current.getBoundingClientRect();
-        const tx = e.clientX - rect.left;
-        const ty = e.clientY - rect.top;
-        setTargetPos({ x: tx, y: ty });
-        targetPosRef.current = { x: tx, y: ty };
+        const tx = e.clientX - rect.left; const ty = e.clientY - rect.top;
+        setTargetPos({ x: tx, y: ty }); targetPosRef.current = { x: tx, y: ty };
         addEffect({ type: 'waypoint', x: tx, y: ty, life: 400 });
       };
 
-      const spawnDamageNumber = (x, y, val, isHeal = false) => {
+      const spawnDamageNumber = (x, y, val, color) => {
         const id = Math.random();
-        setDmgNumbers(prev => [...prev, { id, x, y, val, isHeal }]);
+        setDmgNumbers(prev => [...prev, { id, x, y, val, color }]);
         setTimeout(() => setDmgNumbers(prev => prev.filter(d => d.id !== id)), 800);
       };
 
       const addEffect = (eff) => {
-        const id = Math.random();
-        setEffects(prev => [...prev, { ...eff, id }]);
+        const id = Math.random(); setEffects(prev => [...prev, { ...eff, id }]);
         setTimeout(() => setEffects(prev => prev.filter(e => e.id !== id)), eff.life || 800);
       };
 
       const castSkill = useCallback((k) => {
         if (phaseRef.current !== 'playing') return;
-        
         setCds(prev => {
           if (prev[k] > 0) return prev;
-          
-          const a = aimRef.current;
-          const p = posRef.current;
-          let cdTime = 0;
+          const a = aimRef.current; const p = posRef.current; let cdTime = 0;
 
-          // 공용 스펠 (D, F) 처리
           if (k === 'D') {
               const { w, h } = arenaSizeRef.current;
               const nx = Math.max(40, Math.min(w - 40, p.x + a.x * 300));
@@ -581,15 +340,12 @@
               cdTime = SPELL_DEFS.D.cd;
           } 
           else if (k === 'F') {
-              setHp(prev => Math.min(MAX_HP, prev + 40));
-              addEffect({ type: 'heal', x: p.x, y: p.y, life: 800 });
-              spawnDamageNumber(p.x, p.y, '+40', true);
+              setHp(hp => Math.min(MAX_HP, hp + 40));
+              spawnDamageNumber(p.x, p.y, '+40', '#4ade80');
               cdTime = SPELL_DEFS.F.cd;
           } 
-          // 영웅 전용 스킬 (Q, W, E, R) 처리
           else {
-              const skills = getSkillSet(hero.arch);
-              const def = skills[k];
+              const skills = getSkillSet(hero.arch); const def = skills[k];
               if (!def) return prev;
               cdTime = def.cd;
 
@@ -599,16 +355,12 @@
                       const angle = baseA + offset;
                       setProjectiles(pp => [...pp, {
                           id: Math.random(), x: p.x, y: p.y,
-                          vx: Math.cos(angle) * def.projSpeed,
-                          vy: Math.sin(angle) * def.projSpeed,
-                          dist: 0, range: 800,
-                          color: def.color, damage: def.damage,
-                          scale: def.scale || 1, pierce: def.pierce || false,
-                          homing: def.homing || false, hitSet: []
+                          vx: Math.cos(angle) * def.projSpeed, vy: Math.sin(angle) * def.projSpeed,
+                          dist: 0, range: 800, color: def.color, damage: def.damage,
+                          scale: def.scale || 1, pierce: def.pierce || false, homing: def.homing || false, hitSet: []
                       }]);
                   };
-                  if (def.multi === 3) { spawnProj(-0.2); spawnProj(0); spawnProj(0.2); }
-                  else { spawnProj(0); }
+                  if (def.multi === 3) { spawnProj(-0.2); spawnProj(0); spawnProj(0.2); } else { spawnProj(0); }
               } 
               else if (k === 'W') {
                   const { w, h } = arenaSizeRef.current;
@@ -623,22 +375,34 @@
                   addEffect({ type: 'aoe', x: p.x, y: p.y, life: 500, color: def.color, scale: def.radius/180 });
                   setEnemies(prevE => {
                       let killed = 0;
-                      const survivors = prevE.filter(e => {
+                      const survivors = prevE.map(e => {
                           if (dist(e.x, e.y, p.x, p.y) < def.radius) {
-                              killed++; spawnDamageNumber(e.x, e.y, 'CRUSH'); return false;
+                              spawnDamageNumber(e.x, e.y, 80, '#fff');
+                              return { ...e, hp: e.hp - 80 };
                           }
-                          return true;
+                          return e;
+                      }).filter(e => {
+                          if (e.hp <= 0) { killed++; return false; } return true;
                       });
                       if (killed) setScore(s => s + killed * 75);
                       return survivors;
                   });
               } 
               else if (k === 'R') {
+                  // 궁극기: 거리 감쇠 (Distance Attenuation) 알고리즘
                   addEffect({ type: 'ult', x: 0, y: 0, life: 800 });
                   setEnemies(prevE => {
-                      prevE.forEach(e => spawnDamageNumber(e.x, e.y, 'ULT'));
-                      setScore(s => s + prevE.length * 100);
-                      return [];
+                      let killed = 0;
+                      const survivors = prevE.map(e => {
+                          const d = dist(p.x, p.y, e.x, e.y);
+                          const dmg = Math.max(20, Math.floor(400 - (d * 0.5))); // 거리가 멀수록 데미지 감소
+                          spawnDamageNumber(e.x, e.y, dmg, '#e8c547');
+                          return { ...e, hp: e.hp - dmg };
+                      }).filter(e => {
+                          if (e.hp <= 0) { killed++; return false; } return true;
+                      });
+                      if (killed) setScore(s => s + killed * 100);
+                      return survivors;
                   });
               }
           }
@@ -647,14 +411,8 @@
       }, [hero]);
 
       useEffect(() => {
-        const onKey = (e) => {
-          const k = e.key.toUpperCase();
-          if (['Q','W','E','R','D','F'].includes(k)) {
-            e.preventDefault(); castSkill(k);
-          }
-        };
-        window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
+        const onKey = (e) => { const k = e.key.toUpperCase(); if (['Q','W','E','R','D','F'].includes(k)) { e.preventDefault(); castSkill(k); } };
+        window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
       }, [castSkill]);
 
       useEffect(() => {
@@ -664,151 +422,159 @@
           if (phaseRef.current !== 'playing') return;
           const { w, h } = arenaSizeRef.current;
           
-          // 1. 캐릭터 마우스 방향 부드러운 이동 (Click-to-Move 로직)
-          const p = posRef.current;
-          const tp = targetPosRef.current;
+          // 1. Click-to-Move 이동
+          const p = posRef.current; const tp = targetPosRef.current;
           const distToTarget = Math.hypot(tp.x - p.x, tp.y - p.y);
           if (distToTarget > 3) {
-              const moveSpeed = 12; 
+              const moveSpeed = 14; 
               const nx = p.x + ((tp.x - p.x) / distToTarget) * Math.min(moveSpeed, distToTarget);
               const ny = p.y + ((tp.y - p.y) / distToTarget) * Math.min(moveSpeed, distToTarget);
-              setPos({ x: nx, y: ny });
-              posRef.current = { x: nx, y: ny };
+              setPos({ x: nx, y: ny }); posRef.current = { x: nx, y: ny };
           }
 
           // 2. 쿨타임 감소
           setCds(prev => {
-            let changed = false;
-            const next = { ...prev };
-            for (const k of Object.keys(next)) {
-              if (next[k] > 0) {
-                next[k] = Math.max(0, +(next[k] - TICK / 1000).toFixed(2));
-                changed = true;
-              }
-            }
+            let changed = false; const next = { ...prev };
+            for (const k of Object.keys(next)) { if (next[k] > 0) { next[k] = Math.max(0, +(next[k] - TICK / 1000).toFixed(2)); changed = true; } }
             return changed ? next : prev;
           });
 
-          // 3. 투사체 이동 및 유도(Homing) 기믹
-          setProjectiles(prevProj => prevProj
-            .map(pr => {
+          // 3. 투사체(유도기믹 포함) 및 적중
+          setProjectiles(prevProj => {
+            const remaining = [];
+            for (const pr of prevProj) {
                 let vx = pr.vx; let vy = pr.vy;
-                // 유도 기능이 있다면 가장 가까운 적을 향해 각도 수정
-                if (pr.homing && enemies.length > 0) {
-                    let nearest = null; let minDist = 400;
-                    for (const e of enemies) {
-                        const d = dist(pr.x, pr.y, e.x, e.y);
-                        if (d < minDist) { minDist = d; nearest = e; }
-                    }
-                    if (nearest) {
-                        const targetA = Math.atan2(nearest.y - pr.y, nearest.x - pr.x);
-                        const currentA = Math.atan2(vy, vx);
-                        const newA = currentA + Math.sin(targetA - currentA) * 0.2;
-                        const speed = Math.hypot(vx, vy);
-                        vx = Math.cos(newA) * speed; vy = Math.sin(newA) * speed;
-                    }
+                if (pr.homing) {
+                    setEnemies(es => {
+                        if (es.length > 0) {
+                            let nearest = null; let minDist = 400;
+                            for (const e of es) { const d = dist(pr.x, pr.y, e.x, e.y); if (d < minDist) { minDist = d; nearest = e; } }
+                            if (nearest) {
+                                const targetA = Math.atan2(nearest.y - pr.y, nearest.x - pr.x);
+                                const currentA = Math.atan2(vy, vx);
+                                const newA = currentA + Math.sin(targetA - currentA) * 0.25;
+                                const speed = Math.hypot(vx, vy);
+                                vx = Math.cos(newA) * speed; vy = Math.sin(newA) * speed;
+                            }
+                        }
+                        return es;
+                    });
                 }
-                return { ...pr, vx, vy, x: pr.x + vx, y: pr.y + vy, dist: pr.dist + Math.hypot(vx, vy) };
-            })
-            .filter(pr => pr.dist < pr.range && pr.x > -50 && pr.x < w + 50 && pr.y > -50 && pr.y < h + 50)
-          );
+                const newPr = { ...pr, vx, vy, x: pr.x + vx, y: pr.y + vy, dist: pr.dist + Math.hypot(vx, vy) };
+                
+                let consumed = false;
+                setEnemies(prevE => {
+                    let scoreAdd = 0;
+                    const nextE = prevE.map(e => {
+                        if (!consumed && dist(newPr.x, newPr.y, e.x, e.y) < 38 * newPr.scale && !newPr.hitSet.includes(e.id)) {
+                            spawnDamageNumber(e.x, e.y, newPr.damage, '#fff');
+                            e.hp -= newPr.damage;
+                            if (newPr.pierce) newPr.hitSet.push(e.id); else consumed = true;
+                        }
+                        return e;
+                    }).filter(e => {
+                        if (e.hp <= 0) { scoreAdd += 50; return false; } return true;
+                    });
+                    if (scoreAdd) setScore(s => s + scoreAdd);
+                    return nextE;
+                });
+                
+                if (!consumed && newPr.dist < newPr.range && newPr.x > -50 && newPr.x < w + 50 && newPr.y > -50 && newPr.y < h + 50) {
+                    remaining.push(newPr);
+                }
+            }
+            return remaining;
+          });
 
-          // 4. 적 이동 및 플레이어 피격 판정
+          // 4. 적 무빙 (비선형 회피 기동 알고리즘) 및 능동 공격
           let playerHitDmg = 0;
           setEnemies(prev => {
-            const speed = ENEMY_BASE_SPEED + (waveRef.current - 1) * 0.18;
             const surviving = [];
             for (const e of prev) {
-              const dx = posRef.current.x - e.x;
-              const dy = posRef.current.y - e.y;
+              const dx = posRef.current.x - e.x; const dy = posRef.current.y - e.y;
               const d = Math.hypot(dx, dy) || 1;
-              const nx = e.x + (dx / d) * speed;
-              const ny = e.y + (dy / d) * speed;
+              const speed = e.kind.speed + (waveRef.current - 1) * 0.3;
               
-              if (d < PLAYER_RADIUS + 18) {
-                if (!invulnRef.current) playerHitDmg += ENEMY_HIT_DMG;
+              let nx = e.x + (dx / d) * speed;
+              let ny = e.y + (dy / d) * speed;
+
+              // 불규칙 회피/진동 벡터 (Erratic Movement)
+              nx += Math.sin(Date.now() / 200 + e.id) * e.kind.erratic;
+              ny += Math.cos(Date.now() / 200 + e.id) * e.kind.erratic;
+
+              // 원거리 적의 능동적 공격 발사
+              if (e.kind.type === 'ranged' && d < 500 && Math.random() < 0.015) {
+                 setEnemyProjectiles(ep => [...ep, {
+                    id: Math.random(), x: e.x, y: e.y,
+                    vx: (dx/d) * 10, vy: (dy/d) * 10, dist: 0, range: 600, damage: e.kind.damage, color: e.kind.color
+                 }]);
+              }
+
+              // 근접 충돌 판정
+              if (d < PLAYER_RADIUS + 20) {
+                if (!invulnRef.current) playerHitDmg += (e.kind.type === 'melee' ? e.kind.damage * 1.5 : e.kind.damage);
                 continue; 
               }
-              surviving.push({ ...e, x: nx, y: ny, hit: false });
+              surviving.push({ ...e, x: nx, y: ny });
             }
             return surviving;
+          });
+
+          // 5. 적 투사체 vs 플레이어 판정
+          setEnemyProjectiles(ep => {
+             const remaining = [];
+             for (const pr of ep) {
+                 const d = dist(posRef.current.x, posRef.current.y, pr.x, pr.y);
+                 if (d < PLAYER_RADIUS) {
+                     if (!invulnRef.current) playerHitDmg += pr.damage;
+                     continue;
+                 }
+                 pr.x += pr.vx; pr.y += pr.vy; pr.dist += Math.hypot(pr.vx, pr.vy);
+                 if (pr.dist < pr.range) remaining.push(pr);
+             }
+             return remaining;
           });
 
           if (playerHitDmg > 0) {
             setHurtFlash(Date.now());
             setHp(prev => {
               const nh = Math.max(0, prev - playerHitDmg);
-              if (nh <= 0) setPhase('dead');
-              return nh;
+              if (nh <= 0) setPhase('dead'); return nh;
             });
           }
 
-          // 5. 투사체 vs 적 충돌 판정
-          setProjectiles(prevProj => {
-            const remaining = [];
-            for (const pr of prevProj) {
-              let consumed = false;
-              setEnemies(prevE => {
-                const newE = [];
-                for (const e of prevE) {
-                  // 관통 기믹 적용 (이미 맞은 적은 무시)
-                  if (!consumed && dist(pr.x, pr.y, e.x, e.y) < HIT_RADIUS * pr.scale && !pr.hitSet.includes(e.id)) {
-                    spawnDamageNumber(e.x, e.y, pr.damage);
-                    setScore(s => s + pr.damage);
-                    if (pr.pierce) { pr.hitSet.push(e.id); } 
-                    else { consumed = true; }
-                    continue; // 1-hit KO
-                  }
-                  newE.push(e);
-                }
-                return newE;
-              });
-              if (!consumed) remaining.push(pr);
-            }
-            return remaining;
-          });
-
-          // 6. 적 스폰
+          // 6. 몬스터 스폰
           const now = Date.now();
-          const spawnInterval = Math.max(280, 1100 - (waveRef.current - 1) * 90);
+          const spawnInterval = Math.max(250, 1000 - (waveRef.current - 1) * 80);
           if (now - lastSpawnRef.current > spawnInterval) {
             lastSpawnRef.current = now;
-            const edge = Math.floor(Math.random() * 4);
-            let ex, ey; const M = 30;
-            if (edge === 0) { ex = rand(0, w); ey = -M; }
-            else if (edge === 1) { ex = w + M; ey = rand(0, h); }
-            else if (edge === 2) { ex = rand(0, w); ey = h + M; }
-            else { ex = -M; ey = rand(0, h); }
+            const edge = Math.floor(Math.random() * 4); let ex, ey; const M = 40;
+            if (edge === 0) { ex = rand(0, w); ey = -M; } else if (edge === 1) { ex = w + M; ey = rand(0, h); } else if (edge === 2) { ex = rand(0, w); ey = h + M; } else { ex = -M; ey = rand(0, h); }
             const wildKind = choice(WILD_POKEMONS);
-            setEnemies(prev => prev.length > 70 ? prev : [...prev, {
-              id: Math.random(), x: ex, y: ey, kind: wildKind, hit: false,
+            setEnemies(prev => prev.length > 80 ? prev : [...prev, {
+              id: Math.random(), x: ex, y: ey, kind: wildKind, hit: false, hp: wildKind.hp * (1 + (waveRef.current - 1)*0.2), maxHp: wildKind.hp * (1 + (waveRef.current - 1)*0.2)
             }]);
           }
 
-          // 7. 웨이브 진행도
+          // 7. 웨이브 진행
           const elapsed = (Date.now() - waveStartRef.current) / 1000;
-          const waveLen = 18;
-          const prog = Math.min(1, elapsed / waveLen);
+          const waveLen = 20; const prog = Math.min(1, elapsed / waveLen);
           setWaveProgress(prog);
           if (prog >= 1) {
-            const nextWave = waveRef.current + 1;
-            waveRef.current = nextWave;
-            setWave(nextWave);
-            setWaveAnnounce({ id: Date.now(), n: nextWave });
+            const nextWave = waveRef.current + 1; waveRef.current = nextWave;
+            setWave(nextWave); setWaveAnnounce({ id: Date.now(), n: nextWave });
             waveStartRef.current = Date.now();
-            setHp(h => Math.min(MAX_HP, h + 20)); 
+            setHp(h => Math.min(MAX_HP, h + 25)); 
           }
         }, 50);
         return () => clearInterval(interval);
-      }, [phase, enemies]); // 의존성 배열에 enemies 추가하여 유도탄 갱신 최적화
+      }, [phase]); 
 
       useEffect(() => {
         if (!waveAnnounce) return;
-        const t = setTimeout(() => setWaveAnnounce(null), 2400);
-        return () => clearTimeout(t);
+        const t = setTimeout(() => setWaveAnnounce(null), 2400); return () => clearTimeout(t);
       }, [waveAnnounce]);
 
-      // --- 렌더링 파트 ---
       if (phase === 'select') {
         return (
           <div className="min-h-screen bg-[#060912] flex flex-col items-center overflow-y-auto" style={{ padding: '60px 40px' }}>
@@ -834,11 +600,6 @@
                 </div>
               ))}
             </div>
-            
-            <div className="mt-12 mono text-[10px] tracking-[0.3em] text-[#6b7790] text-center max-w-xl">
-              <div>RIGHT/LEFT CLICK TO MOVE · MOUSE TO AIM</div>
-              <div className="mt-1 text-[#3a4566]">SELECT YOUR PARTNER TO BEGIN</div>
-            </div>
           </div>
         );
       }
@@ -853,7 +614,6 @@
             <div className="grid-floor"></div>
             <div className="top-banner mono">{SLOGAN}</div>
 
-            {/* 좌측 상단 플레이어 정보 */}
             <div className="absolute top-12 left-10 z-50 flex items-center gap-5">
               <img src={hero.img} className="w-16 h-16 object-contain hero-img-display" />
               <div>
@@ -872,7 +632,6 @@
               </div>
             </div>
 
-            {/* 우측 상단 스코어 정보 */}
             <div className="absolute top-12 right-10 z-50 text-right">
               <div className="mono text-[10px] tracking-[0.3em] text-[#6b7790]">SCORE</div>
               <div className="text-4xl font-bold accent-glow tracking-tight tabular-nums">{score.toString().padStart(6, '0')}</div>
@@ -883,24 +642,15 @@
               <div className="wave-bar ml-auto" style={{ marginLeft: 'auto' }}>
                 <div className="wave-bar-fill" style={{ width: `${waveProgress * 100}%` }}></div>
               </div>
-              <div className="mono text-[9px] tracking-[0.3em] text-[#6b7790] mt-1">WILD POKÉMON · {enemies.length}</div>
             </div>
 
-            {/* 모서리 브라켓 */}
-            <div className="corner-bracket" style={{ top: 8, left: 8, borderRight: 'none', borderBottom: 'none' }}></div>
-            <div className="corner-bracket" style={{ top: 8, right: 8, borderLeft: 'none', borderBottom: 'none' }}></div>
-            <div className="corner-bracket" style={{ bottom: 8, left: 8, borderRight: 'none', borderTop: 'none' }}></div>
-            <div className="corner-bracket" style={{ bottom: 8, right: 8, borderLeft: 'none', borderTop: 'none' }}></div>
-
-            {/* 야생 포켓몬 (적) */}
             {enemies.map(e => (
               <div key={e.id} className={`enemy ${e.hit ? 'hit' : ''}`} style={{ left: e.x, top: e.y }}>
-                <div className="enemy-aura"></div>
-                <img src={e.kind.img} className="w-full h-full object-contain enemy-img relative" />
+                <div className="enemy-hp-bar"><div className="enemy-hp-fill" style={{width: `${(e.hp/e.maxHp)*100}%`}}></div></div>
+                <img src={e.kind.img} className="w-full h-full object-contain enemy-img relative mt-2" />
               </div>
             ))}
 
-            {/* 투사체 */}
             {projectiles.map(p => (
               <div key={p.id} className="projectile" style={{ 
                   left: p.x, top: p.y, transform: `translate(-50%, -50%) scale(${p.scale})`,
@@ -909,24 +659,28 @@
               }} />
             ))}
 
-            {/* 이펙트 (AOE, Blink, Heal, Waypoint) */}
+            {enemyProjectiles.map(ep => (
+              <div key={ep.id} className="enemy-projectile" style={{ 
+                  left: ep.x, top: ep.y, transform: `translate(-50%, -50%) scale(0.8)`, width: 24, height: 24,
+                  background: `radial-gradient(circle, #fff 0%, ${ep.color} 60%, transparent 100%)`,
+                  boxShadow: `0 0 15px ${ep.color}`
+              }} />
+            ))}
+
             {effects.map(eff => {
               if (eff.type === 'aoe') return <div key={eff.id} className="aoe-ring" style={{ left: eff.x, top: eff.y, borderColor: eff.color, boxShadow: `0 0 60px ${eff.color}99, inset 0 0 60px ${eff.color}4d`, transform: `translate(-50%, -50%) scale(${eff.scale || 1})` }} />;
               if (eff.type === 'blink') return <div key={eff.id} className="absolute pointer-events-none" style={{ left: eff.x, top: eff.y, transform: 'translate(-50%, -50%)' }}><div style={{ width: 60, height: 60, borderRadius: '50%', border: '2px solid #5ecfff', boxShadow: '0 0 30px #5ecfff', animation: 'aoe-expand 0.5s ease-out forwards' }}/></div>;
               if (eff.type === 'ult') return <div key={eff.id} className="ult-flash" />;
               if (eff.type === 'waypoint') return <div key={eff.id} className="waypoint" style={{ left: eff.x, top: eff.y }} />;
-              if (eff.type === 'heal') return <div key={eff.id} className="heal-ring" style={{ left: eff.x, top: eff.y }} />;
               return null;
             })}
 
-            {/* 데미지 텍스트 */}
             {dmgNumbers.map(d => (
-              <div key={d.id} className="dmg-num" style={{ left: d.x, top: d.y, color: d.isHeal ? '#4ade80' : 'var(--danger)' }}>
+              <div key={d.id} className="dmg-num" style={{ left: d.x, top: d.y, color: d.color || 'var(--danger)' }}>
                 {typeof d.val === 'number' ? `-${d.val}` : d.val}
               </div>
             ))}
 
-            {/* 챔피언 */}
             <div className={`champion ${invuln ? 'invuln' : ''}`} style={{ left: pos.x, top: pos.y }}>
               <div className="champion-ring"></div>
               <img src={hero.img} className="w-full h-full object-contain hero-img-display" />
@@ -942,48 +696,29 @@
               <div key={waveAnnounce.id} className="wave-announce">
                 <div className="mono text-[12px] tracking-[0.5em] text-[#5ecfff] mb-2">INCOMING</div>
                 <div className="text-7xl font-bold accent-glow tracking-tight">WAVE {waveAnnounce.n.toString().padStart(2, '0')}</div>
-                <div className="mono text-[11px] tracking-[0.4em] text-[#6b7790] mt-3">SURVIVE</div>
               </div>
             )}
 
-            <div className="vignette"></div>
-            <div className="scanline"></div>
-
-            {/* 게임 오버 화면 */}
             {phase === 'dead' && (
               <div className="gameover-overlay">
                 <div className="gameover-card">
                   <div className="mono text-[11px] tracking-[0.5em] text-[#ff4d6d] mb-3">·· ARENA TERMINATED ··</div>
                   <div className="text-5xl font-bold tracking-tight mb-6" style={{ background: 'linear-gradient(90deg, #ff4d6d, #fb923c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>GAME OVER</div>
                   <div className="grid grid-cols-3 gap-8 mb-8 mono">
-                    <div>
-                      <div className="text-[10px] tracking-[0.3em] text-[#6b7790]">FINAL SCORE</div>
-                      <div className="text-3xl font-bold accent-glow tabular-nums mt-1">{score.toString().padStart(6, '0')}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] tracking-[0.3em] text-[#6b7790]">WAVE REACHED</div>
-                      <div className="text-3xl font-bold tabular-nums mt-1">{wave.toString().padStart(2, '0')}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] tracking-[0.3em] text-[#6b7790]">PARTNER</div>
-                      <div className="text-xl font-bold mt-1.5 uppercase">{hero.name}</div>
-                    </div>
+                    <div><div className="text-[10px] tracking-[0.3em] text-[#6b7790]">FINAL SCORE</div><div className="text-3xl font-bold accent-glow tabular-nums mt-1">{score.toString().padStart(6, '0')}</div></div>
+                    <div><div className="text-[10px] tracking-[0.3em] text-[#6b7790]">WAVE REACHED</div><div className="text-3xl font-bold tabular-nums mt-1">{wave.toString().padStart(2, '0')}</div></div>
+                    <div><div className="text-[10px] tracking-[0.3em] text-[#6b7790]">PARTNER</div><div className="text-xl font-bold mt-1.5 uppercase">{hero.name}</div></div>
                   </div>
-                  <button className="restart-btn mono cursor-pointer" onClick={restart}>RESTART</button>
-                  <div className="mono text-[10px] tracking-[0.3em] text-[#3a4566] mt-6">PRESS RESTART TO SELECT A NEW PARTNER</div>
+                  <button className="restart-btn mono" onClick={restart}>RESTART</button>
                 </div>
               </div>
             )}
           </div>
 
-          {/* 하단 HUD */}
           <div className="hud">
-            {/* 고유 스킬 파트 (Q, W, E, R) */}
             <div className="flex gap-4">
               {['Q','W','E','R'].map(k => {
-                const def = currentSkills[k];
-                const ready = cds[k] === 0;
-                const color = def.color || (k === 'R' ? '#5ecfff' : '#e8c547');
+                const def = currentSkills[k]; const ready = cds[k] === 0; const color = def.color || (k === 'R' ? '#5ecfff' : '#e8c547');
                 return (
                   <div key={k} className="flex flex-col items-center">
                     <div className={`skill-slot ${ready ? 'ready' : ''}`} style={{ borderColor: ready ? color : '#2a3354', boxShadow: ready ? `0 0 15px ${color}4d` : 'none' }}>
@@ -997,14 +732,10 @@
                 );
               })}
             </div>
-
             <div className="w-px h-16 bg-[#2a3354] mx-2" />
-
-            {/* 공용 스펠 파트 (D, F) */}
             <div className="flex gap-4">
               {['D','F'].map(k => {
-                const def = SPELL_DEFS[k];
-                const ready = cds[k] === 0;
+                const def = SPELL_DEFS[k]; const ready = cds[k] === 0;
                 return (
                   <div key={k} className="flex flex-col items-center">
                     <div className={`skill-slot ${ready ? 'ready' : ''}`} style={{ borderColor: ready ? def.color : '#2a3354', borderRadius: '50%' }}>
@@ -1018,10 +749,7 @@
                 );
               })}
             </div>
-
             <div className="w-px h-16 bg-[#2a3354] mx-2" />
-            
-            {/* 조작 설명 */}
             <div className="flex flex-col items-start gap-1 mono text-[9px] text-[#6b7790]">
               <div><span style={{color: currentSkills.Q.color || '#e8c547'}}>Q</span> · {currentSkills.Q.desc.toUpperCase()}</div>
               <div><span style={{color: SPELL_DEFS.D.color}}>D</span> · FLASH (BLINK)</div>
