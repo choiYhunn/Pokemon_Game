@@ -147,7 +147,7 @@
         const loop = setInterval(() => {
           const s = stateRef.current, p = s.pos, t = s.target;
           
-          // Kinetic Movement ( 가속/관성 로직 )
+          // Kinetic Movement (가속/관성 로직 유지)
           const dx = t.x - p.x, dy = t.y - p.y;
           const d = Math.hypot(dx, dy);
           if (d > 5) {
@@ -160,21 +160,56 @@
           const nx = p.x + s.vel.x, ny = p.y + s.vel.y;
           setPos({ x: nx, y: ny }); s.pos = { x: nx, y: ny };
 
-          // Projectiles & HP damage
-          let damageTaken = 0;
+          // 1. 적 스폰 및 내 HP 감소 로직 (Fix 1)
+          let damageToPlayer = 0;
+          setEnemies(prev => {
+            // 적이 없으면 생성 (엔지니어링 관점에서 50ms마다 확률적 스폰)
+            const nextEnemies = (prev.length < 5 && Math.random() < 0.05) 
+              ? [...prev, { 
+                  id: Math.random(), 
+                  ...WILD_POKEMONS[Math.floor(Math.random() * 3)], 
+                  x: Math.random() * window.innerWidth, 
+                  y: Math.random() * window.innerHeight,
+                  hp: 100 // 초기 HP 설정
+                }] 
+              : prev;
+
+            return nextEnemies.map(e => {
+              const edx = s.pos.x - e.x, edy = s.pos.y - e.y, ed = Math.hypot(edx, edy);
+              if (ed < 45) damageToPlayer += (e.damage / 20); // 20프레임당 1회 데미지 환산
+              return { ...e, x: e.x + (edx/ed) * e.speed, y: e.y + (edy/ed) * e.speed };
+            });
+          });
+          if (damageToPlayer > 0) setHp(prev => { const val = Math.max(0, prev - damageToPlayer); if(val <= 0) setPhase('dead'); return val; });
+
+          // 2. Q 공격 모션(투사체) 업데이트 및 가시성 확보 (Fix 2)
           setProjectiles(prev => prev.map(pr => ({ ...pr, x: pr.x + pr.vx, y: pr.y + pr.vy, dist: pr.dist + 15 })).filter(pr => pr.dist < 800));
-          
+
+          // 3. 적 처치 로직: 투사체와 적의 거리 계산 (Fix 3)
           setEnemies(prev => prev.map(e => {
-            const edx = s.pos.x - e.x, edy = s.pos.y - e.y, ed = Math.hypot(edx, edy);
-            const moveX = e.x + (edx/ed) * e.kind.speed + Math.sin(Date.now()/200) * 2;
-            const moveY = e.y + (edy/ed) * e.kind.speed + Math.cos(Date.now()/200) * 2;
-            if (ed < 45) damageTaken += (e.kind.damage / 10); // 프레임당 데미지 분산
-            return { ...e, x: moveX, y: moveY };
+            let currentHp = e.hp;
+            // 리액트 상태 동기화가 아닌 루프 내부 계산을 위해 projectiles를 참조하거나, setEnemies 내부에서 filter 처리
+            return e; 
+          }).filter(e => {
+            let hit = false;
+            // stateRef나 setProjectiles의 prev 값을 이용한 충돌 판정
+            // 여기서는 단순화를 위해 enemies 필터링 시 projectiles 위치를 대조
+            return e.hp > 0;
           }));
 
-          if (damageTaken > 0) setHp(prev => { const val = Math.max(0, prev - damageTaken); if(val<=0) setPhase('dead'); return val; });
+          // Fix 3 (심화): 투사체 충돌 판정 (실제 적이 죽게 만드는 로직)
+          setProjectiles(prevPr => {
+            setEnemies(prevEn => prevEn.map(en => {
+              let newHp = en.hp;
+              prevPr.forEach(pr => {
+                if (Math.hypot(pr.x - en.x, pr.y - en.y) < 40) newHp -= 10; // Q 데미지 적용
+              });
+              return { ...en, hp: newHp };
+            }).filter(en => en.hp > 0));
+            return prevPr;
+          });
 
-          // Cooldowns
+          // 쿨다운 업데이트
           setCds(prev => { const n = { ...prev }; let ch = false; Object.keys(n).forEach(k => { if(n[k]>0){ n[k]=Math.max(0, n[k]-0.05); ch=true; } }); return ch ? n : prev; });
         }, 50);
         return () => clearInterval(loop);
