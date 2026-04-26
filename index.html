@@ -89,7 +89,7 @@
       width: 100px;
       height: 100px;
       transform: translate(-50%, -50%);
-      transition: left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
+      transition: opacity 0.2s;
       z-index: 25;
       will-change: left, top;
     }
@@ -125,22 +125,31 @@
     .projectile {
       position: absolute;
       width: 22px; height: 22px;
-      background: radial-gradient(circle, #fff 0%, var(--accent-2) 60%, transparent 100%);
       border-radius: 50%;
-      box-shadow: 0 0 20px var(--accent-2), 0 0 40px var(--accent-2);
       z-index: 15;
-      transform: translate(-50%, -50%);
       pointer-events: none;
     }
-    .projectile::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(94, 207, 255, 0.4), transparent 70%);
-      animation: proj-pulse 0.4s ease-in-out infinite;
+
+    /* Waypoint & Heal Ring */
+    .waypoint {
+      position: absolute; transform: translate(-50%, -50%);
+      width: 30px; height: 30px; border: 3px solid #4ade80;
+      border-radius: 50%; animation: waypoint-pulse 0.4s ease-out forwards; pointer-events: none;
     }
-    @keyframes proj-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.4); } }
+    @keyframes waypoint-pulse {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; border-width: 6px; }
+      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; border-width: 1px; }
+    }
+
+    .heal-ring {
+      position: absolute; transform: translate(-50%, -50%);
+      border-radius: 50%; border: 6px solid #4ade80;
+      animation: heal-pulse 0.8s ease-out forwards; pointer-events: none; z-index: 20;
+    }
+    @keyframes heal-pulse {
+      0% { width: 40px; height: 40px; opacity: 1; border-width: 12px; }
+      100% { width: 200px; height: 200px; opacity: 0; border-width: 1px; }
+    }
 
     /* Enemy */
     .enemy {
@@ -165,10 +174,9 @@
     .dmg-num {
       position: absolute;
       font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 18px;
-      color: var(--danger);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      font-weight: 900;
+      font-size: 20px;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.9);
       animation: dmg-rise 0.8s ease-out forwards;
       z-index: 30;
       transform: translate(-50%, -50%);
@@ -183,17 +191,14 @@
     /* AOE ring */
     .aoe-ring {
       position: absolute;
-      transform: translate(-50%, -50%);
       border-radius: 50%;
-      border: 3px solid var(--accent);
-      box-shadow: 0 0 60px rgba(232, 197, 71, 0.6), inset 0 0 60px rgba(232, 197, 71, 0.3);
       animation: aoe-expand 0.5s ease-out forwards;
       z-index: 18;
       pointer-events: none;
     }
     @keyframes aoe-expand {
       0% { width: 20px; height: 20px; opacity: 1; }
-      100% { width: 320px; height: 320px; opacity: 0; }
+      100% { width: 360px; height: 360px; opacity: 0; }
     }
 
     /* Ult flash */
@@ -205,11 +210,7 @@
       z-index: 50;
       pointer-events: none;
     }
-    @keyframes ult-flash {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      100% { opacity: 0; }
-    }
+    @keyframes ult-flash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
 
     /* Hit flash on player */
     .player-hurt {
@@ -220,11 +221,7 @@
       z-index: 40;
       pointer-events: none;
     }
-    @keyframes hurt-flash {
-      0% { opacity: 0; }
-      30% { opacity: 1; }
-      100% { opacity: 0; }
-    }
+    @keyframes hurt-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
 
     /* HUD */
     .hud {
@@ -239,105 +236,53 @@
       z-index: 100;
     }
     .skill-slot {
-      width: 72px; height: 72px;
-      background: #060912;
-      border: 1px solid #2a3354;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
+      width: 72px; height: 72px; background: #060912;
+      border: 1px solid #2a3354; border-radius: 6px;
+      position: relative; display: flex; align-items: center; justify-content: center;
       transition: all 0.15s;
     }
-    .skill-slot.ready { border-color: var(--accent); box-shadow: 0 0 12px rgba(232, 197, 71, 0.25); }
-    .skill-slot.ult.ready { border-color: var(--accent-2); box-shadow: 0 0 16px rgba(94, 207, 255, 0.4); }
+    .skill-slot.ready { box-shadow: 0 0 12px rgba(255,255,255,0.1); border-color: #fff; }
     .cd-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 22px;
-      font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-      border-radius: 6px;
+      position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 22px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace; border-radius: 6px;
     }
 
     .top-banner {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 11px;
-      letter-spacing: 0.4em;
-      color: var(--accent);
-      font-weight: 700;
-      text-align: center;
-      z-index: 50;
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; letter-spacing: 0.4em; color: var(--accent);
+      font-weight: 700; text-align: center; z-index: 50;
     }
 
     /* HP bar */
     .hp-bar-outer {
-      width: 360px;
-      height: 22px;
-      background: #060912;
-      border: 1px solid #2a3354;
-      border-radius: 4px;
-      position: relative;
-      overflow: hidden;
+      width: 360px; height: 22px; background: #060912;
+      border: 1px solid #2a3354; border-radius: 4px;
+      position: relative; overflow: hidden;
     }
     .hp-bar-inner {
-      height: 100%;
-      background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
-      transition: width 0.25s ease-out;
-      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 0 8px rgba(74, 222, 128, 0.4);
+      height: 100%; background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+      transition: width 0.25s ease-out; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 0 8px rgba(74, 222, 128, 0.4);
     }
     .hp-bar-inner.low { background: linear-gradient(90deg, #ff4d6d 0%, #c81d3a 100%); }
     .hp-bar-inner.med { background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%); }
 
     /* Wave bar */
     .wave-bar {
-      width: 240px;
-      height: 6px;
-      background: #1a2138;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 6px;
+      width: 240px; height: 6px; background: #1a2138;
+      border-radius: 3px; overflow: hidden; margin-top: 6px;
     }
-    .wave-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent));
-      transition: width 0.3s linear;
-    }
+    .wave-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width 0.3s linear; }
 
     /* Hero card */
-    .hero-card {
-      position: relative;
-      transition: all 0.2s;
-      overflow: hidden;
-    }
-    .hero-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, transparent 0%, rgba(232, 197, 71, 0) 50%, rgba(232, 197, 71, 0.15) 100%);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .hero-card:hover::before { opacity: 1; }
+    .hero-card { position: relative; transition: all 0.2s; overflow: hidden; }
     .hero-card:hover { transform: translateY(-2px); border-color: var(--accent) !important; }
 
     /* Wave banner */
     .wave-announce {
-      position: absolute;
-      top: 30%;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      z-index: 60;
-      pointer-events: none;
+      position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
+      text-align: center; z-index: 60; pointer-events: none;
       animation: wave-in 2.4s ease-out forwards;
     }
     @keyframes wave-in {
@@ -348,66 +293,37 @@
 
     /* Game over modal */
     .gameover-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(6, 9, 18, 0.92);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      animation: fade-in 0.4s ease-out;
+      position: absolute; inset: 0; background: rgba(6, 9, 18, 0.92);
+      backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+      z-index: 200; animation: fade-in 0.4s ease-out;
     }
     @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
     .gameover-card {
       background: linear-gradient(180deg, #0c1120 0%, #060912 100%);
-      border: 1px solid #2a3354;
-      padding: 48px 64px;
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 20px 80px rgba(0,0,0,0.8);
-      min-width: 480px;
+      border: 1px solid #2a3354; padding: 48px 64px; border-radius: 8px;
+      text-align: center; box-shadow: 0 20px 80px rgba(0,0,0,0.8); min-width: 480px;
     }
 
     .restart-btn {
-      background: var(--accent);
-      color: #060912;
-      padding: 14px 36px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      border-radius: 4px;
-      border: none;
-      transition: all 0.15s;
-      font-family: 'Space Grotesk';
+      background: var(--accent); color: #060912; padding: 14px 36px;
+      font-weight: 700; letter-spacing: 0.2em; border-radius: 4px; border: none;
+      transition: all 0.15s; font-family: 'Space Grotesk';
     }
     .restart-btn:hover { background: #fff4c0; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(232, 197, 71, 0.4); }
 
     .scanline {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0; pointer-events: none; z-index: 90;
       background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px);
-      pointer-events: none;
-      z-index: 90;
     }
 
     @keyframes enemy-bob {
       0%, 100% { transform: translate(-50%, -50%) translateY(0); }
       50% { transform: translate(-50%, -50%) translateY(-3px); }
     }
-    .enemy-img { 
-      animation: enemy-bob 1.2s ease-in-out infinite; 
-      filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.8));
-    }
-    .hero-img-display {
-      filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.8));
-    }
-
-    .corner-bracket {
-      position: absolute;
-      width: 18px; height: 18px;
-      border: 1px solid var(--accent);
-    }
+    .enemy-img { animation: enemy-bob 1.2s ease-in-out infinite; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.8)); }
+    .hero-img-display { filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.8)); }
+    .corner-bracket { position: absolute; width: 18px; height: 18px; border: 1px solid var(--accent); }
   </style>
 </head>
 <body>
@@ -464,18 +380,64 @@
         img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`
     }));
 
-    const SKILL_DEFS = {
-      Q: { name: 'Bolt',    desc: 'Directional projectile', cd: 1.2 },
-      W: { name: 'Blink',   desc: 'Dash + 0.6s invuln',     cd: 4.0 },
-      E: { name: 'Pulse',   desc: '180px AOE burst',        cd: 6.0 },
-      R: { name: 'Ultima',  desc: 'Wipe all enemies',       cd: 22.0 },
+    // 스펠 정의 (D, F)
+    const SPELL_DEFS = {
+      D: { name: 'FLASH', desc: 'Instant blink to aim', cd: 10.0, color: '#e8c547' },
+      F: { name: 'HEAL', desc: 'Restore 40 HP', cd: 15.0, color: '#4ade80' }
+    };
+
+    // 타입별 고유 스킬셋 생성기 (크리에이티브 기믹 포함)
+    const getSkillSet = (arch) => {
+      const type = arch.split('/')[0];
+      switch(type) {
+          case 'Electric': return {
+              Q: { name: 'THUNDER SHOCK', desc: 'Fast bolt', cd: 0.8, color: '#fde047', projSpeed: 22, damage: 25 },
+              W: { name: 'VOLT SWITCH', desc: 'Dash + Invuln', cd: 4.0 },
+              E: { name: 'DISCHARGE', desc: 'AOE stun ring', cd: 5.0, radius: 200, color: '#fde047' },
+              R: { name: 'THUNDERSTORM', desc: 'Total wipe', cd: 20.0 }
+          };
+          case 'Fire': return {
+              Q: { name: 'FLAMETHROWER', desc: 'Piercing flame', cd: 1.5, color: '#fb923c', projSpeed: 14, damage: 45, pierce: true, scale: 1.5 },
+              W: { name: 'FLAME CHARGE', desc: 'Dash + Invuln', cd: 5.0 },
+              E: { name: 'FIRE SPIN', desc: 'AOE burst', cd: 6.0, radius: 180, color: '#fb923c' },
+              R: { name: 'BLAST BURN', desc: 'Total wipe', cd: 22.0 }
+          };
+          case 'Grass': return {
+              Q: { name: 'RAZOR LEAF', desc: 'Triple spread', cd: 1.2, color: '#4ade80', projSpeed: 16, damage: 20, multi: 3 },
+              W: { name: 'SYNTHESIS', desc: 'Dash + Invuln', cd: 4.0 },
+              E: { name: 'SOLAR BEAM', desc: 'AOE burst', cd: 6.0, radius: 220, color: '#4ade80' },
+              R: { name: 'FRENZY PLANT', desc: 'Total wipe', cd: 22.0 }
+          };
+          case 'Water': return {
+              Q: { name: 'WATER GUN', desc: 'Rapid stream', cd: 0.6, color: '#38bdf8', projSpeed: 18, damage: 18, pierce: true },
+              W: { name: 'AQUA JET', desc: 'Dash + Invuln', cd: 3.5 },
+              E: { name: 'SURF', desc: 'Huge AOE', cd: 6.0, radius: 250, color: '#38bdf8' },
+              R: { name: 'HYDRO PUMP', desc: 'Total wipe', cd: 20.0 }
+          };
+          case 'Psychic': return {
+              Q: { name: 'PSYBEAM', desc: 'Homing ball', cd: 1.0, color: '#e879f9', projSpeed: 12, damage: 35, homing: true, scale: 1.2 },
+              W: { name: 'TELEPORT', desc: 'Dash + Invuln', cd: 3.0 },
+              E: { name: 'CONFUSION', desc: 'AOE burst', cd: 5.0, radius: 200, color: '#e879f9' },
+              R: { name: 'PSYSTRIKE', desc: 'Total wipe', cd: 18.0 }
+          };
+          case 'Dragon': return {
+              Q: { name: 'DRAGON CLAW', desc: 'Heavy slash', cd: 1.5, color: '#f472b6', projSpeed: 25, damage: 60, scale: 2.0 },
+              W: { name: 'DRAGON DANCE', desc: 'Dash + Invuln', cd: 4.0 },
+              E: { name: 'OUTRAGE', desc: 'Massive AOE', cd: 7.0, radius: 300, color: '#f472b6' },
+              R: { name: 'DRACO METEOR', desc: 'Total wipe', cd: 25.0 }
+          };
+          default: return {
+              Q: { name: 'SWIFT', desc: 'Directional star', cd: 1.0, color: '#cbd5e1', projSpeed: 16, damage: 30 },
+              W: { name: 'QUICK ATTACK', desc: 'Dash + Invuln', cd: 4.0 },
+              E: { name: 'HYPER VOICE', desc: 'AOE burst', cd: 6.0, radius: 180, color: '#cbd5e1' },
+              R: { name: 'HYPER BEAM', desc: 'Total wipe', cd: 22.0 }
+          };
+      }
     };
 
     const MAX_HP = 100;
     const PLAYER_RADIUS = 30;
     const HIT_RADIUS = 38;
-    const PROJ_SPEED = 14;
-    const PROJ_RANGE = 800;
     const ENEMY_BASE_SPEED = 1.6;
     const ENEMY_HIT_DMG = 12;
 
@@ -485,8 +447,9 @@
 
     const Game = () => {
       const [hero, setHero] = useState(null);
-      const [phase, setPhase] = useState('select'); // select | playing | dead
+      const [phase, setPhase] = useState('select');
       const [pos, setPos] = useState({ x: 0, y: 0 });
+      const [targetPos, setTargetPos] = useState({ x: 0, y: 0 }); // 이동 목표 지점
       const [aim, setAim] = useState({ x: 1, y: 0 });
       const [hp, setHp] = useState(MAX_HP);
       const [score, setScore] = useState(0);
@@ -495,14 +458,14 @@
       const [waveAnnounce, setWaveAnnounce] = useState(null);
       const [enemies, setEnemies] = useState([]);
       const [projectiles, setProjectiles] = useState([]);
-      const [effects, setEffects] = useState([]); // {type, x, y, id, expires}
+      const [effects, setEffects] = useState([]);
       const [dmgNumbers, setDmgNumbers] = useState([]);
-      const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0 });
+      const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
       const [invuln, setInvuln] = useState(false);
       const [hurtFlash, setHurtFlash] = useState(0);
 
-      // Refs to avoid stale closures inside the game loop
       const posRef = useRef(pos);
+      const targetPosRef = useRef(targetPos);
       const aimRef = useRef(aim);
       const hpRef = useRef(hp);
       const invulnRef = useRef(invuln);
@@ -514,16 +477,17 @@
       const waveStartRef = useRef(0);
 
       useEffect(() => { posRef.current = pos; }, [pos]);
+      useEffect(() => { targetPosRef.current = targetPos; }, [targetPos]);
       useEffect(() => { aimRef.current = aim; }, [aim]);
       useEffect(() => { hpRef.current = hp; }, [hp]);
       useEffect(() => { invulnRef.current = invuln; }, [invuln]);
       useEffect(() => { waveRef.current = wave; }, [wave]);
       useEffect(() => { phaseRef.current = phase; }, [phase]);
 
-      // Mouse tracking for aim
+      // 조준용 마우스 추적
       useEffect(() => {
         const onMove = (e) => {
-          if (!arenaRef.current) return;
+          if (!arenaRef.current || phaseRef.current !== 'playing') return;
           const rect = arenaRef.current.getBoundingClientRect();
           const mx = e.clientX - rect.left;
           const my = e.clientY - rect.top;
@@ -537,7 +501,6 @@
         return () => window.removeEventListener('mousemove', onMove);
       }, []);
 
-      // Resize
       useEffect(() => {
         const measure = () => {
           if (arenaRef.current) {
@@ -550,45 +513,44 @@
         return () => window.removeEventListener('resize', measure);
       }, [phase]);
 
-      // Initialize position when entering play
+      // 게임 시작 시 중앙 배치
       useEffect(() => {
         if (phase === 'playing') {
           const { w, h } = arenaSizeRef.current;
           setPos({ x: w / 2, y: h / 2 });
           posRef.current = { x: w / 2, y: h / 2 };
+          setTargetPos({ x: w / 2, y: h / 2 });
+          targetPosRef.current = { x: w / 2, y: h / 2 };
           waveStartRef.current = Date.now();
         }
       }, [phase]);
 
       const startGame = (h) => {
-        // 울음소리 재생
         const audio = new Audio(h.cry);
         audio.volume = 0.3;
         audio.play().catch(() => {});
-
-        setHero(h);
-        setHp(MAX_HP);
-        setScore(0);
-        setWave(1);
-        setWaveProgress(0);
-        setEnemies([]);
-        setProjectiles([]);
-        setEffects([]);
-        setDmgNumbers([]);
-        setCds({ Q: 0, W: 0, E: 0, R: 0 });
-        setInvuln(false);
-        setPhase('playing');
-        setWaveAnnounce({ id: Date.now(), n: 1 });
+        setHero(h); setHp(MAX_HP); setScore(0); setWave(1); setWaveProgress(0);
+        setEnemies([]); setProjectiles([]); setEffects([]); setDmgNumbers([]);
+        setCds({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
+        setInvuln(false); setPhase('playing'); setWaveAnnounce({ id: Date.now(), n: 1 });
       };
 
-      const restart = () => {
-        setPhase('select');
-        setHero(null);
+      const restart = () => { setPhase('select'); setHero(null); };
+
+      // 클릭 투 무브 (Click-to-Move) 핸들러
+      const onArenaClick = (e) => {
+        if (phaseRef.current !== 'playing') return;
+        const rect = arenaRef.current.getBoundingClientRect();
+        const tx = e.clientX - rect.left;
+        const ty = e.clientY - rect.top;
+        setTargetPos({ x: tx, y: ty });
+        targetPosRef.current = { x: tx, y: ty };
+        addEffect({ type: 'waypoint', x: tx, y: ty, life: 400 });
       };
 
-      const spawnDamageNumber = (x, y, val) => {
+      const spawnDamageNumber = (x, y, val, isHeal = false) => {
         const id = Math.random();
-        setDmgNumbers(prev => [...prev, { id, x, y, val }]);
+        setDmgNumbers(prev => [...prev, { id, x, y, val, isHeal }]);
         setTimeout(() => setDmgNumbers(prev => prev.filter(d => d.id !== id)), 800);
       };
 
@@ -600,60 +562,95 @@
 
       const castSkill = useCallback((k) => {
         if (phaseRef.current !== 'playing') return;
-        if (!SKILL_DEFS[k]) return;
+        
         setCds(prev => {
           if (prev[k] > 0) return prev;
+          
           const a = aimRef.current;
           const p = posRef.current;
-          if (k === 'Q') {
-            setProjectiles(pp => [...pp, {
-              id: Math.random(), x: p.x, y: p.y,
-              vx: a.x * PROJ_SPEED, vy: a.y * PROJ_SPEED,
-              dist: 0, range: PROJ_RANGE,
-            }]);
-          } else if (k === 'W') {
-            const { w, h } = arenaSizeRef.current;
-            const nx = Math.max(40, Math.min(w - 40, p.x + a.x * 220));
-            const ny = Math.max(40, Math.min(h - 40, p.y + a.y * 220));
-            setPos({ x: nx, y: ny });
-            posRef.current = { x: nx, y: ny };
-            setInvuln(true);
-            setTimeout(() => setInvuln(false), 600);
-            addEffect({ type: 'blink', x: p.x, y: p.y, life: 500 });
-          } else if (k === 'E') {
-            const px = p.x, py = p.y;
-            addEffect({ type: 'aoe', x: px, y: py, life: 500 });
-            setEnemies(prev => {
-              let killed = 0;
-              const survivors = prev.filter(e => {
-                if (dist(e.x, e.y, px, py) < 180) {
-                  killed++;
-                  spawnDamageNumber(e.x, e.y, 'KO');
-                  return false;
-                }
-                return true;
-              });
-              if (killed) setScore(s => s + killed * 75);
-              return survivors;
-            });
-          } else if (k === 'R') {
-            addEffect({ type: 'ult', x: 0, y: 0, life: 800 });
-            setEnemies(prev => {
-              prev.forEach(e => spawnDamageNumber(e.x, e.y, 'ULT'));
-              setScore(s => s + prev.length * 100);
-              return [];
-            });
+          let cdTime = 0;
+
+          // 공용 스펠 (D, F) 처리
+          if (k === 'D') {
+              const { w, h } = arenaSizeRef.current;
+              const nx = Math.max(40, Math.min(w - 40, p.x + a.x * 300));
+              const ny = Math.max(40, Math.min(h - 40, p.y + a.y * 300));
+              setPos({ x: nx, y: ny }); posRef.current = { x: nx, y: ny };
+              setTargetPos({ x: nx, y: ny }); targetPosRef.current = { x: nx, y: ny };
+              addEffect({ type: 'blink', x: p.x, y: p.y, life: 500 });
+              cdTime = SPELL_DEFS.D.cd;
+          } 
+          else if (k === 'F') {
+              setHp(prev => Math.min(MAX_HP, prev + 40));
+              addEffect({ type: 'heal', x: p.x, y: p.y, life: 800 });
+              spawnDamageNumber(p.x, p.y, '+40', true);
+              cdTime = SPELL_DEFS.F.cd;
+          } 
+          // 영웅 전용 스킬 (Q, W, E, R) 처리
+          else {
+              const skills = getSkillSet(hero.arch);
+              const def = skills[k];
+              if (!def) return prev;
+              cdTime = def.cd;
+
+              if (k === 'Q') {
+                  const baseA = Math.atan2(a.y, a.x);
+                  const spawnProj = (offset) => {
+                      const angle = baseA + offset;
+                      setProjectiles(pp => [...pp, {
+                          id: Math.random(), x: p.x, y: p.y,
+                          vx: Math.cos(angle) * def.projSpeed,
+                          vy: Math.sin(angle) * def.projSpeed,
+                          dist: 0, range: 800,
+                          color: def.color, damage: def.damage,
+                          scale: def.scale || 1, pierce: def.pierce || false,
+                          homing: def.homing || false, hitSet: []
+                      }]);
+                  };
+                  if (def.multi === 3) { spawnProj(-0.2); spawnProj(0); spawnProj(0.2); }
+                  else { spawnProj(0); }
+              } 
+              else if (k === 'W') {
+                  const { w, h } = arenaSizeRef.current;
+                  const nx = Math.max(40, Math.min(w - 40, p.x + a.x * 220));
+                  const ny = Math.max(40, Math.min(h - 40, p.y + a.y * 220));
+                  setPos({ x: nx, y: ny }); posRef.current = { x: nx, y: ny };
+                  setTargetPos({ x: nx, y: ny }); targetPosRef.current = { x: nx, y: ny };
+                  setInvuln(true); setTimeout(() => setInvuln(false), 600);
+                  addEffect({ type: 'blink', x: p.x, y: p.y, life: 500 });
+              } 
+              else if (k === 'E') {
+                  addEffect({ type: 'aoe', x: p.x, y: p.y, life: 500, color: def.color, scale: def.radius/180 });
+                  setEnemies(prevE => {
+                      let killed = 0;
+                      const survivors = prevE.filter(e => {
+                          if (dist(e.x, e.y, p.x, p.y) < def.radius) {
+                              killed++; spawnDamageNumber(e.x, e.y, 'CRUSH'); return false;
+                          }
+                          return true;
+                      });
+                      if (killed) setScore(s => s + killed * 75);
+                      return survivors;
+                  });
+              } 
+              else if (k === 'R') {
+                  addEffect({ type: 'ult', x: 0, y: 0, life: 800 });
+                  setEnemies(prevE => {
+                      prevE.forEach(e => spawnDamageNumber(e.x, e.y, 'ULT'));
+                      setScore(s => s + prevE.length * 100);
+                      return [];
+                  });
+              }
           }
-          return { ...prev, [k]: SKILL_DEFS[k].cd };
+          return { ...prev, [k]: cdTime };
         });
-      }, []);
+      }, [hero]);
 
       useEffect(() => {
         const onKey = (e) => {
           const k = e.key.toUpperCase();
-          if (['Q','W','E','R'].includes(k)) {
-            e.preventDefault();
-            castSkill(k);
+          if (['Q','W','E','R','D','F'].includes(k)) {
+            e.preventDefault(); castSkill(k);
           }
         };
         window.addEventListener('keydown', onKey);
@@ -666,8 +663,20 @@
         const interval = setInterval(() => {
           if (phaseRef.current !== 'playing') return;
           const { w, h } = arenaSizeRef.current;
+          
+          // 1. 캐릭터 마우스 방향 부드러운 이동 (Click-to-Move 로직)
           const p = posRef.current;
+          const tp = targetPosRef.current;
+          const distToTarget = Math.hypot(tp.x - p.x, tp.y - p.y);
+          if (distToTarget > 3) {
+              const moveSpeed = 12; 
+              const nx = p.x + ((tp.x - p.x) / distToTarget) * Math.min(moveSpeed, distToTarget);
+              const ny = p.y + ((tp.y - p.y) / distToTarget) * Math.min(moveSpeed, distToTarget);
+              setPos({ x: nx, y: ny });
+              posRef.current = { x: nx, y: ny };
+          }
 
+          // 2. 쿨타임 감소
           setCds(prev => {
             let changed = false;
             const next = { ...prev };
@@ -680,18 +689,38 @@
             return changed ? next : prev;
           });
 
-          setProjectiles(prev => prev
-            .map(pr => ({ ...pr, x: pr.x + pr.vx, y: pr.y + pr.vy, dist: pr.dist + Math.hypot(pr.vx, pr.vy) }))
+          // 3. 투사체 이동 및 유도(Homing) 기믹
+          setProjectiles(prevProj => prevProj
+            .map(pr => {
+                let vx = pr.vx; let vy = pr.vy;
+                // 유도 기능이 있다면 가장 가까운 적을 향해 각도 수정
+                if (pr.homing && enemies.length > 0) {
+                    let nearest = null; let minDist = 400;
+                    for (const e of enemies) {
+                        const d = dist(pr.x, pr.y, e.x, e.y);
+                        if (d < minDist) { minDist = d; nearest = e; }
+                    }
+                    if (nearest) {
+                        const targetA = Math.atan2(nearest.y - pr.y, nearest.x - pr.x);
+                        const currentA = Math.atan2(vy, vx);
+                        const newA = currentA + Math.sin(targetA - currentA) * 0.2;
+                        const speed = Math.hypot(vx, vy);
+                        vx = Math.cos(newA) * speed; vy = Math.sin(newA) * speed;
+                    }
+                }
+                return { ...pr, vx, vy, x: pr.x + vx, y: pr.y + vy, dist: pr.dist + Math.hypot(vx, vy) };
+            })
             .filter(pr => pr.dist < pr.range && pr.x > -50 && pr.x < w + 50 && pr.y > -50 && pr.y < h + 50)
           );
 
+          // 4. 적 이동 및 플레이어 피격 판정
           let playerHitDmg = 0;
           setEnemies(prev => {
             const speed = ENEMY_BASE_SPEED + (waveRef.current - 1) * 0.18;
             const surviving = [];
             for (const e of prev) {
-              const dx = p.x - e.x;
-              const dy = p.y - e.y;
+              const dx = posRef.current.x - e.x;
+              const dy = posRef.current.y - e.y;
               const d = Math.hypot(dx, dy) || 1;
               const nx = e.x + (dx / d) * speed;
               const ny = e.y + (dy / d) * speed;
@@ -709,13 +738,12 @@
             setHurtFlash(Date.now());
             setHp(prev => {
               const nh = Math.max(0, prev - playerHitDmg);
-              if (nh <= 0) {
-                setPhase('dead');
-              }
+              if (nh <= 0) setPhase('dead');
               return nh;
             });
           }
 
+          // 5. 투사체 vs 적 충돌 판정
           setProjectiles(prevProj => {
             const remaining = [];
             for (const pr of prevProj) {
@@ -723,11 +751,13 @@
               setEnemies(prevE => {
                 const newE = [];
                 for (const e of prevE) {
-                  if (!consumed && dist(pr.x, pr.y, e.x, e.y) < HIT_RADIUS) {
-                    consumed = true;
-                    spawnDamageNumber(e.x, e.y, 35);
-                    setScore(s => s + 50);
-                    continue;
+                  // 관통 기믹 적용 (이미 맞은 적은 무시)
+                  if (!consumed && dist(pr.x, pr.y, e.x, e.y) < HIT_RADIUS * pr.scale && !pr.hitSet.includes(e.id)) {
+                    spawnDamageNumber(e.x, e.y, pr.damage);
+                    setScore(s => s + pr.damage);
+                    if (pr.pierce) { pr.hitSet.push(e.id); } 
+                    else { consumed = true; }
+                    continue; // 1-hit KO
                   }
                   newE.push(e);
                 }
@@ -738,23 +768,24 @@
             return remaining;
           });
 
+          // 6. 적 스폰
           const now = Date.now();
           const spawnInterval = Math.max(280, 1100 - (waveRef.current - 1) * 90);
           if (now - lastSpawnRef.current > spawnInterval) {
             lastSpawnRef.current = now;
             const edge = Math.floor(Math.random() * 4);
-            let ex, ey;
-            const M = 30;
+            let ex, ey; const M = 30;
             if (edge === 0) { ex = rand(0, w); ey = -M; }
             else if (edge === 1) { ex = w + M; ey = rand(0, h); }
             else if (edge === 2) { ex = rand(0, w); ey = h + M; }
             else { ex = -M; ey = rand(0, h); }
             const wildKind = choice(WILD_POKEMONS);
-            setEnemies(prev => prev.length > 60 ? prev : [...prev, {
+            setEnemies(prev => prev.length > 70 ? prev : [...prev, {
               id: Math.random(), x: ex, y: ey, kind: wildKind, hit: false,
             }]);
           }
 
+          // 7. 웨이브 진행도
           const elapsed = (Date.now() - waveStartRef.current) / 1000;
           const waveLen = 18;
           const prog = Math.min(1, elapsed / waveLen);
@@ -765,11 +796,11 @@
             setWave(nextWave);
             setWaveAnnounce({ id: Date.now(), n: nextWave });
             waveStartRef.current = Date.now();
-            setHp(h => Math.min(MAX_HP, h + 15)); 
+            setHp(h => Math.min(MAX_HP, h + 20)); 
           }
         }, 50);
         return () => clearInterval(interval);
-      }, [phase]);
+      }, [phase, enemies]); // 의존성 배열에 enemies 추가하여 유도탄 갱신 최적화
 
       useEffect(() => {
         if (!waveAnnounce) return;
@@ -777,6 +808,7 @@
         return () => clearTimeout(t);
       }, [waveAnnounce]);
 
+      // --- 렌더링 파트 ---
       if (phase === 'select') {
         return (
           <div className="min-h-screen bg-[#060912] flex flex-col items-center overflow-y-auto" style={{ padding: '60px 40px' }}>
@@ -793,12 +825,8 @@
 
             <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-6xl w-full">
               {HEROES.map(h => (
-                <div key={h.id}
-                     onClick={() => startGame(h)}
-                     className="hero-card border border-[#1a2138] bg-[#0c1120] p-4 rounded-md flex flex-col items-center cursor-pointer"
-                     style={{ '--hero-color': h.color }}>
-                  <div className="w-20 h-20 flex items-center justify-center mb-3"
-                       style={{ background: `radial-gradient(circle, ${h.color}22 0%, transparent 70%)` }}>
+                <div key={h.id} onClick={() => startGame(h)} className="hero-card border border-[#1a2138] bg-[#0c1120] p-4 rounded-md flex flex-col items-center cursor-pointer" style={{ '--hero-color': h.color }}>
+                  <div className="w-20 h-20 flex items-center justify-center mb-3" style={{ background: `radial-gradient(circle, ${h.color}22 0%, transparent 70%)` }}>
                     <img src={h.img} className="w-full h-full object-contain hero-img-display" alt={h.name} />
                   </div>
                   <div className="mono text-[9px] tracking-[0.2em] text-[#6b7790] mb-1">{h.arch.toUpperCase()}</div>
@@ -806,22 +834,9 @@
                 </div>
               ))}
             </div>
-
-            <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl w-full">
-              {Object.entries(SKILL_DEFS).map(([k, def]) => (
-                <div key={k} className="border border-[#1a2138] bg-[#0c1120] p-4 rounded">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-2xl font-bold accent-glow">{k}</span>
-                    <span className="text-sm font-bold">{def.name}</span>
-                  </div>
-                  <div className="mono text-[10px] text-[#6b7790]">{def.desc}</div>
-                  <div className="mono text-[10px] text-[#e8c547] mt-1">CD {def.cd}s</div>
-                </div>
-              ))}
-            </div>
             
             <div className="mt-12 mono text-[10px] tracking-[0.3em] text-[#6b7790] text-center max-w-xl">
-              <div>MOUSE TO AIM · Q/W/E/R FOR ABILITIES</div>
+              <div>RIGHT/LEFT CLICK TO MOVE · MOUSE TO AIM</div>
               <div className="mt-1 text-[#3a4566]">SELECT YOUR PARTNER TO BEGIN</div>
             </div>
           </div>
@@ -830,26 +845,26 @@
 
       const hpPct = (hp / MAX_HP) * 100;
       const hpClass = hp < 30 ? 'low' : hp < 60 ? 'med' : '';
+      const currentSkills = getSkillSet(hero.arch);
 
       return (
         <div className="h-screen flex flex-col">
-          <div ref={arenaRef} className="map-arena">
+          <div ref={arenaRef} className="map-arena" onClick={onArenaClick}>
             <div className="grid-floor"></div>
-
             <div className="top-banner mono">{SLOGAN}</div>
 
+            {/* 좌측 상단 플레이어 정보 */}
             <div className="absolute top-12 left-10 z-50 flex items-center gap-5">
               <img src={hero.img} className="w-16 h-16 object-contain hero-img-display" />
               <div>
                 <div className="mono text-[10px] tracking-[0.3em] text-[#6b7790]">PARTNER</div>
                 <div className="text-2xl font-bold tracking-tight uppercase">{hero.name}</div>
-                <div className="mono text-[10px] text-[#6b7790] mt-0.5">{hero.arch.toUpperCase()}</div>
+                <div className="mono text-[10px] text-[#6b7790] mt-0.5" style={{color: currentSkills.Q.color}}>{hero.arch.toUpperCase()}</div>
               </div>
               <div className="ml-6">
                 <div className="hp-bar-outer">
                   <div className={`hp-bar-inner ${hpClass}`} style={{ width: `${hpPct}%` }}></div>
-                  <div className="absolute inset-0 flex items-center justify-center mono text-[12px] font-bold tracking-wider"
-                       style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
+                  <div className="absolute inset-0 flex items-center justify-center mono text-[12px] font-bold tracking-wider" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
                     {Math.ceil(hp)} / {MAX_HP}
                   </div>
                 </div>
@@ -857,11 +872,10 @@
               </div>
             </div>
 
+            {/* 우측 상단 스코어 정보 */}
             <div className="absolute top-12 right-10 z-50 text-right">
               <div className="mono text-[10px] tracking-[0.3em] text-[#6b7790]">SCORE</div>
-              <div className="text-4xl font-bold accent-glow tracking-tight tabular-nums">
-                {score.toString().padStart(6, '0')}
-              </div>
+              <div className="text-4xl font-bold accent-glow tracking-tight tabular-nums">{score.toString().padStart(6, '0')}</div>
               <div className="flex items-center justify-end gap-3 mt-2">
                 <div className="mono text-[10px] tracking-[0.3em] text-[#5ecfff]">WAVE</div>
                 <div className="text-2xl font-bold tabular-nums">{wave.toString().padStart(2, '0')}</div>
@@ -869,60 +883,55 @@
               <div className="wave-bar ml-auto" style={{ marginLeft: 'auto' }}>
                 <div className="wave-bar-fill" style={{ width: `${waveProgress * 100}%` }}></div>
               </div>
-              <div className="mono text-[9px] tracking-[0.3em] text-[#6b7790] mt-1">
-                WILD POKÉMON · {enemies.length}
-              </div>
+              <div className="mono text-[9px] tracking-[0.3em] text-[#6b7790] mt-1">WILD POKÉMON · {enemies.length}</div>
             </div>
 
+            {/* 모서리 브라켓 */}
             <div className="corner-bracket" style={{ top: 8, left: 8, borderRight: 'none', borderBottom: 'none' }}></div>
             <div className="corner-bracket" style={{ top: 8, right: 8, borderLeft: 'none', borderBottom: 'none' }}></div>
             <div className="corner-bracket" style={{ bottom: 8, left: 8, borderRight: 'none', borderTop: 'none' }}></div>
             <div className="corner-bracket" style={{ bottom: 8, right: 8, borderLeft: 'none', borderTop: 'none' }}></div>
 
+            {/* 야생 포켓몬 (적) */}
             {enemies.map(e => (
-              <div key={e.id} className={`enemy ${e.hit ? 'hit' : ''}`}
-                   style={{ left: e.x, top: e.y }}>
+              <div key={e.id} className={`enemy ${e.hit ? 'hit' : ''}`} style={{ left: e.x, top: e.y }}>
                 <div className="enemy-aura"></div>
                 <img src={e.kind.img} className="w-full h-full object-contain enemy-img relative" />
               </div>
             ))}
 
+            {/* 투사체 */}
             {projectiles.map(p => (
-              <div key={p.id} className="projectile" style={{ left: p.x, top: p.y }} />
+              <div key={p.id} className="projectile" style={{ 
+                  left: p.x, top: p.y, transform: `translate(-50%, -50%) scale(${p.scale})`,
+                  background: `radial-gradient(circle, #fff 0%, ${p.color} 60%, transparent 100%)`,
+                  boxShadow: `0 0 20px ${p.color}, 0 0 40px ${p.color}`
+              }} />
             ))}
 
+            {/* 이펙트 (AOE, Blink, Heal, Waypoint) */}
             {effects.map(eff => {
-              if (eff.type === 'aoe') {
-                return <div key={eff.id} className="aoe-ring" style={{ left: eff.x, top: eff.y }} />;
-              }
-              if (eff.type === 'blink') {
-                return <div key={eff.id} className="absolute pointer-events-none"
-                            style={{ left: eff.x, top: eff.y, transform: 'translate(-50%, -50%)' }}>
-                  <div style={{
-                    width: 60, height: 60, borderRadius: '50%',
-                    border: '2px solid #5ecfff', boxShadow: '0 0 30px #5ecfff',
-                    animation: 'aoe-expand 0.5s ease-out forwards',
-                  }}/>
-                </div>;
-              }
-              if (eff.type === 'ult') {
-                return <div key={eff.id} className="ult-flash" />;
-              }
+              if (eff.type === 'aoe') return <div key={eff.id} className="aoe-ring" style={{ left: eff.x, top: eff.y, borderColor: eff.color, boxShadow: `0 0 60px ${eff.color}99, inset 0 0 60px ${eff.color}4d`, transform: `translate(-50%, -50%) scale(${eff.scale || 1})` }} />;
+              if (eff.type === 'blink') return <div key={eff.id} className="absolute pointer-events-none" style={{ left: eff.x, top: eff.y, transform: 'translate(-50%, -50%)' }}><div style={{ width: 60, height: 60, borderRadius: '50%', border: '2px solid #5ecfff', boxShadow: '0 0 30px #5ecfff', animation: 'aoe-expand 0.5s ease-out forwards' }}/></div>;
+              if (eff.type === 'ult') return <div key={eff.id} className="ult-flash" />;
+              if (eff.type === 'waypoint') return <div key={eff.id} className="waypoint" style={{ left: eff.x, top: eff.y }} />;
+              if (eff.type === 'heal') return <div key={eff.id} className="heal-ring" style={{ left: eff.x, top: eff.y }} />;
               return null;
             })}
 
+            {/* 데미지 텍스트 */}
             {dmgNumbers.map(d => (
-              <div key={d.id} className="dmg-num" style={{ left: d.x, top: d.y }}>
+              <div key={d.id} className="dmg-num" style={{ left: d.x, top: d.y, color: d.isHeal ? '#4ade80' : 'var(--danger)' }}>
                 {typeof d.val === 'number' ? `-${d.val}` : d.val}
               </div>
             ))}
 
-            <div className={`champion ${invuln ? 'invuln' : ''}`}
-                 style={{ left: pos.x, top: pos.y }}>
+            {/* 챔피언 */}
+            <div className={`champion ${invuln ? 'invuln' : ''}`} style={{ left: pos.x, top: pos.y }}>
               <div className="champion-ring"></div>
               <img src={hero.img} className="w-full h-full object-contain hero-img-display" />
               <div className="champion-shadow"></div>
-              <div className="absolute -top-7 left-1/2 -translate-x-1/2 mono px-2 py-0.5 bg-black/70 border border-[#e8c547]/40 rounded text-[9px] font-bold tracking-[0.15em] whitespace-nowrap">
+              <div className="absolute -top-7 left-1/2 -translate-x-1/2 mono px-2 py-0.5 bg-black/80 border border-[#e8c547]/40 rounded text-[10px] font-bold tracking-[0.15em] whitespace-nowrap">
                 {hero.name.toUpperCase()}
               </div>
             </div>
@@ -940,14 +949,12 @@
             <div className="vignette"></div>
             <div className="scanline"></div>
 
+            {/* 게임 오버 화면 */}
             {phase === 'dead' && (
               <div className="gameover-overlay">
                 <div className="gameover-card">
                   <div className="mono text-[11px] tracking-[0.5em] text-[#ff4d6d] mb-3">·· ARENA TERMINATED ··</div>
-                  <div className="text-5xl font-bold tracking-tight mb-6" style={{
-                    background: 'linear-gradient(90deg, #ff4d6d, #fb923c)',
-                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                  }}>GAME OVER</div>
+                  <div className="text-5xl font-bold tracking-tight mb-6" style={{ background: 'linear-gradient(90deg, #ff4d6d, #fb923c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>GAME OVER</div>
                   <div className="grid grid-cols-3 gap-8 mb-8 mono">
                     <div>
                       <div className="text-[10px] tracking-[0.3em] text-[#6b7790]">FINAL SCORE</div>
@@ -969,26 +976,20 @@
             )}
           </div>
 
+          {/* 하단 HUD */}
           <div className="hud">
-            <div className="flex items-center gap-4 mr-6">
-              <img src={hero.img} className="w-16 h-16 object-contain hero-img-display" />
-              <div>
-                <div className="mono text-[9px] tracking-[0.3em] text-[#6b7790]">PARTNER</div>
-                <div className="text-base font-bold uppercase">{hero.name}</div>
-              </div>
-            </div>
-
-            <div className="flex gap-7">
+            {/* 고유 스킬 파트 (Q, W, E, R) */}
+            <div className="flex gap-4">
               {['Q','W','E','R'].map(k => {
-                const def = SKILL_DEFS[k];
+                const def = currentSkills[k];
                 const ready = cds[k] === 0;
-                const isUlt = k === 'R';
+                const color = def.color || (k === 'R' ? '#5ecfff' : '#e8c547');
                 return (
                   <div key={k} className="flex flex-col items-center">
-                    <div className={`skill-slot ${isUlt ? 'ult' : ''} ${ready ? 'ready' : ''}`}>
+                    <div className={`skill-slot ${ready ? 'ready' : ''}`} style={{ borderColor: ready ? color : '#2a3354', boxShadow: ready ? `0 0 15px ${color}4d` : 'none' }}>
                       <div className="text-center">
-                        <div className={`text-[22px] font-bold ${isUlt ? 'text-[#5ecfff]' : 'text-[#e8c547]'}`}>{k}</div>
-                        <div className="mono text-[7px] tracking-[0.2em] text-[#6b7790] -mt-1">{def.name.toUpperCase()}</div>
+                        <div className="text-[24px] font-bold" style={{color: color}}>{k}</div>
+                        <div className="mono text-[7px] tracking-[0.1em] text-[#6b7790] -mt-1 leading-tight">{def.name.replace(' ', '<br/>').toUpperCase()}</div>
                       </div>
                       {cds[k] > 0 && <div className="cd-overlay">{cds[k].toFixed(1)}</div>}
                     </div>
@@ -997,13 +998,35 @@
               })}
             </div>
 
-            <div className="w-px h-16 bg-[#2a3354]" />
+            <div className="w-px h-16 bg-[#2a3354] mx-2" />
 
-            <div className="flex flex-col items-start gap-1 mono text-[10px] text-[#6b7790]">
-              <div><span className="text-[#e8c547]">Q</span> · DIRECTIONAL BOLT</div>
-              <div><span className="text-[#e8c547]">W</span> · BLINK + INVULN</div>
-              <div><span className="text-[#e8c547]">E</span> · 180px PULSE</div>
-              <div><span className="text-[#5ecfff]">R</span> · TOTAL WIPE</div>
+            {/* 공용 스펠 파트 (D, F) */}
+            <div className="flex gap-4">
+              {['D','F'].map(k => {
+                const def = SPELL_DEFS[k];
+                const ready = cds[k] === 0;
+                return (
+                  <div key={k} className="flex flex-col items-center">
+                    <div className={`skill-slot ${ready ? 'ready' : ''}`} style={{ borderColor: ready ? def.color : '#2a3354', borderRadius: '50%' }}>
+                      <div className="text-center">
+                        <div className="text-[22px] font-black" style={{color: def.color}}>{k}</div>
+                        <div className="mono text-[7px] tracking-[0.2em] text-[#6b7790] -mt-1">{def.name}</div>
+                      </div>
+                      {cds[k] > 0 && <div className="cd-overlay" style={{borderRadius: '50%'}}>{Math.ceil(cds[k])}</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="w-px h-16 bg-[#2a3354] mx-2" />
+            
+            {/* 조작 설명 */}
+            <div className="flex flex-col items-start gap-1 mono text-[9px] text-[#6b7790]">
+              <div><span style={{color: currentSkills.Q.color || '#e8c547'}}>Q</span> · {currentSkills.Q.desc.toUpperCase()}</div>
+              <div><span style={{color: SPELL_DEFS.D.color}}>D</span> · FLASH (BLINK)</div>
+              <div><span style={{color: SPELL_DEFS.F.color}}>F</span> · HEAL (+40 HP)</div>
+              <div><span style={{color: currentSkills.R.color || '#5ecfff'}}>R</span> · {currentSkills.R.desc.toUpperCase()}</div>
             </div>
           </div>
         </div>
