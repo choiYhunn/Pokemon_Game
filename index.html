@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>POKÉMON ARENA: SURVIVOR 30TH</title>
+  <title>POKÉMON ARENA: KINETIC SURVIVOR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,118 +11,36 @@
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
   <style>
-    :root {
-      --accent: #e8c547;
-      --accent-2: #5ecfff;
-      --danger: #ff4d6d;
-      --bg: #060912;
-      --panel: #0c1120;
-      --text: #e8eef7;
-      --muted: #6b7790;
-      --hp: #4ade80;
-    }
-
+    :root { --accent: #e8c547; --accent-2: #5ecfff; --danger: #ff4d6d; --bg: #060912; --text: #e8eef7; }
     html, body, * { cursor: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png'), crosshair !important; }
-
-    body {
-      background-color: var(--bg); color: var(--text);
-      font-family: 'Space Grotesk', system-ui, sans-serif;
-      margin: 0; overflow: hidden; user-select: none;
-    }
-
+    body { background-color: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; margin: 0; overflow: hidden; user-select: none; }
     .mono { font-family: 'JetBrains Mono', monospace; }
-
-    .accent-glow {
-      background: linear-gradient(90deg, #e8c547 0%, #fff4c0 50%, #e8c547 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 14px rgba(232, 197, 71, 0.45));
-    }
-
-    .map-arena {
-      height: calc(100vh - 140px);
-      background: radial-gradient(ellipse at 30% 20%, rgba(94, 207, 255, 0.06) 0%, transparent 50%),
-                  radial-gradient(ellipse at 70% 80%, rgba(232, 197, 71, 0.05) 0%, transparent 50%),
-                  radial-gradient(circle, #0a0f1c 0%, #060912 100%);
-      position: relative; overflow: hidden;
-    }
-
-    .grid-floor {
-      position: absolute; inset: 0;
-      background-image: linear-gradient(rgba(94, 207, 255, 0.04) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(94, 207, 255, 0.04) 1px, transparent 1px);
-      background-size: 60px 60px; pointer-events: none;
-    }
-
-    .champion {
-      position: absolute; width: 100px; height: 100px; transform: translate(-50%, -50%);
-      transition: opacity 0.2s; z-index: 25; will-change: left, top;
-    }
-    .champion.invuln { filter: drop-shadow(0 0 25px rgba(94, 207, 255, 1)); opacity: 0.7; }
-    .champion-shadow {
-      position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
-      width: 70px; height: 14px; background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
-    }
-
-    .projectile { position: absolute; border-radius: 50%; z-index: 15; pointer-events: none; }
-    .enemy-projectile { position: absolute; border-radius: 50%; z-index: 14; pointer-events: none; }
-
-    .waypoint {
-      position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px;
-      border: 3px solid #4ade80; border-radius: 50%; animation: waypoint-pulse 0.4s ease-out forwards; pointer-events: none;
-    }
-    @keyframes waypoint-pulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; border-width: 6px; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; border-width: 1px; } }
-
-    .enemy {
-      position: absolute; width: 70px; height: 70px; transform: translate(-50%, -50%);
-      z-index: 10; transition: filter 0.1s; will-change: left, top; pointer-events: none;
-    }
-    .enemy.hit { filter: brightness(2) saturate(0) drop-shadow(0 0 10px var(--danger)); }
+    .accent-glow { background: linear-gradient(90deg, #e8c547, #fff4c0, #e8c547); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 14px rgba(232, 197, 71, 0.45)); }
+    .map-arena { height: calc(100vh - 140px); background: radial-gradient(circle, #0a0f1c 0%, #060912 100%); position: relative; overflow: hidden; }
+    .grid-floor { position: absolute; inset: 0; background-image: linear-gradient(rgba(94, 207, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(94, 207, 255, 0.04) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+    .champion { position: absolute; width: 100px; height: 100px; transform: translate(-50%, -50%); z-index: 25; will-change: left, top; }
+    .champion.invuln { filter: drop-shadow(0 0 25px #5ecfff); opacity: 0.7; }
+    .projectile { position: absolute; width: 22px; height: 22px; border-radius: 50%; z-index: 15; transform: translate(-50%, -50%); pointer-events: none; }
+    .enemy-projectile { position: absolute; width: 20px; height: 20px; border-radius: 50%; z-index: 14; transform: translate(-50%, -50%); pointer-events: none; }
+    .waypoint { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border: 3px solid #4ade80; border-radius: 50%; animation: waypoint-pulse 0.4s ease-out forwards; pointer-events: none; }
+    @keyframes waypoint-pulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
+    .enemy { position: absolute; width: 70px; height: 70px; transform: translate(-50%, -50%); z-index: 10; will-change: left, top; pointer-events: none; }
     .enemy-hp-bar { position: absolute; top: -10px; left: 10%; width: 80%; height: 4px; background: #333; border-radius: 2px; }
-    .enemy-hp-fill { height: 100%; background: #ff4d6d; border-radius: 2px; transition: width 0.1s; }
-
-    .dmg-num {
-      position: absolute; font-family: 'JetBrains Mono', monospace; font-weight: 900; font-size: 20px;
-      text-shadow: 0 3px 6px rgba(0,0,0,0.9); animation: dmg-rise 0.8s ease-out forwards;
-      z-index: 30; transform: translate(-50%, -50%); pointer-events: none;
-    }
-    @keyframes dmg-rise { 0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; } 20% { transform: translate(-50%, -80%) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -180%) scale(0.9); opacity: 0; } }
-
-    .aoe-ring { position: absolute; border-radius: 50%; animation: aoe-expand 0.5s ease-out forwards; z-index: 18; pointer-events: none; }
-    @keyframes aoe-expand { 0% { width: 20px; height: 20px; opacity: 1; } 100% { width: 360px; height: 360px; opacity: 0; } }
-
-    .ult-flash { position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(232, 197, 71, 0.4) 50%, transparent 100%); animation: ult-flash 0.8s ease-out forwards; z-index: 50; pointer-events: none; }
-    @keyframes ult-flash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
-
-    .player-hurt { position: absolute; inset: 0; background: radial-gradient(circle, transparent 60%, rgba(255, 77, 109, 0.4) 100%); animation: hurt-flash 0.4s ease-out forwards; z-index: 40; pointer-events: none; }
-    @keyframes hurt-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
-
-    .hud { height: 140px; background: linear-gradient(180deg, #060912 0%, #0c1120 100%); border-top: 1px solid #1a2138; display: flex; justify-content: center; align-items: center; gap: 32px; position: relative; z-index: 100; }
-    .skill-slot { width: 72px; height: 72px; background: #060912; border: 1px solid #2a3354; border-radius: 6px; position: relative; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-    .skill-slot.ready { box-shadow: 0 0 12px rgba(255,255,255,0.1); border-color: #fff; }
-    .cd-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; border-radius: 6px; }
-
+    .enemy-hp-fill { height: 100%; background: #ff4d6d; border-radius: 2px; }
+    .dmg-num { position: absolute; font-family: 'JetBrains Mono'; font-weight: 900; font-size: 20px; text-shadow: 0 3px 6px #000; animation: dmg-rise 0.8s ease-out forwards; z-index: 30; pointer-events: none; }
+    @keyframes dmg-rise { 0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; } 100% { transform: translate(-50%, -180%) scale(0.9); opacity: 0; } }
+    .hud { height: 140px; background: #0c1120; border-top: 1px solid #1a2138; display: flex; justify-content: center; align-items: center; gap: 32px; z-index: 100; position: relative; }
+    .skill-slot { width: 72px; height: 72px; background: #060912; border: 1px solid #2a3354; border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; }
+    .skill-slot.ready { border-color: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.1); }
+    .cd-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; border-radius: 6px; }
     .hp-bar-outer { width: 360px; height: 22px; background: #060912; border: 1px solid #2a3354; border-radius: 4px; position: relative; overflow: hidden; }
-    .hp-bar-inner { height: 100%; background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%); transition: width 0.25s ease-out; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 0 8px rgba(74, 222, 128, 0.4); }
-    .hp-bar-inner.low { background: linear-gradient(90deg, #ff4d6d 0%, #c81d3a 100%); }
-
-    .wave-announce { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); text-align: center; z-index: 60; pointer-events: none; animation: wave-in 2.4s ease-out forwards; }
-    @keyframes wave-in { 0% { opacity: 0; transform: translate(-50%, -20px) scale(0.8); } 15%, 70% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, 0) scale(1.05); } }
-
-    .gameover-overlay { position: absolute; inset: 0; background: rgba(6, 9, 18, 0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fade-in 0.4s ease-out; }
-    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-    .gameover-card { background: linear-gradient(180deg, #0c1120 0%, #060912 100%); border: 1px solid #2a3354; padding: 48px 64px; border-radius: 8px; text-align: center; box-shadow: 0 20px 80px rgba(0,0,0,0.8); min-width: 480px; }
-    .restart-btn { background: var(--accent); color: #060912; padding: 14px 36px; font-weight: 700; letter-spacing: 0.2em; border-radius: 4px; border: none; cursor: pointer; transition: 0.15s; }
-    .restart-btn:hover { background: #fff4c0; transform: translateY(-1px); }
-
-    .enemy-img { filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.8)); }
-    .hero-img-display { filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.8)); }
+    .hp-bar-inner { height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); transition: width 0.2s; }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useEffect, useCallback, useRef } = React;
-
     const SLOGAN = "EVERY POKÉMON IS SOMEONE'S FAVORITE";
 
     const HEROES = [
@@ -131,15 +49,6 @@
       { id: 4, name: "Charmander", arch: "Fire", color: "#fb923c" },
       { id: 7, name: "Squirtle", arch: "Water", color: "#38bdf8" },
       { id: 133, name: "Eevee", arch: "Normal", color: "#cbd5e1" },
-      { id: 152, name: "Chikorita", arch: "Grass", color: "#4ade80" },
-      { id: 155, name: "Cyndaquil", arch: "Fire", color: "#fb923c" },
-      { id: 158, name: "Totodile", arch: "Water", color: "#38bdf8" },
-      { id: 252, name: "Treecko", arch: "Grass", color: "#4ade80" },
-      { id: 255, name: "Torchic", arch: "Fire", color: "#fb923c" },
-      { id: 258, name: "Mudkip", arch: "Water", color: "#38bdf8" },
-      { id: 387, name: "Turtwig", arch: "Grass", color: "#4ade80" },
-      { id: 390, name: "Chimchar", arch: "Fire", color: "#fb923c" },
-      { id: 393, name: "Piplup", arch: "Water", color: "#38bdf8" },
       { id: 150, name: "Mewtwo", arch: "Psychic", color: "#e879f9" },
       { id: 6, name: "Charizard", arch: "Fire/Fly", color: "#fb923c" },
       { id: 9, name: "Blastoise", arch: "Water", color: "#38bdf8" },
@@ -147,616 +56,166 @@
       { id: 448, name: "Lucario", arch: "Fight/Steel", color: "#f472b6" },
       { id: 94, name: "Gengar", arch: "Ghost", color: "#a78bfa" },
       { id: 143, name: "Snorlax", arch: "Normal", color: "#cbd5e1" },
-      { id: 149, name: "Dragonite", arch: "Dragon", color: "#f472b6" },
-      { id: 282, name: "Gardevoir", arch: "Psychic", color: "#e879f9" },
-      { id: 130, name: "Gyarados", arch: "Water/Fly", color: "#38bdf8" },
-      { id: 131, name: "Lapras", arch: "Water/Ice", color: "#a5f3fc" },
-      { id: 197, name: "Umbreon", arch: "Dark", color: "#475569" },
-      { id: 384, name: "Rayquaza", arch: "Dragon/Fly", color: "#f472b6" },
-      { id: 470, name: "Leafeon", arch: "Grass", color: "#4ade80" },
-      { id: 471, name: "Glaceon", arch: "Ice", color: "#a5f3fc" },
-      { id: 700, name: "Sylveon", arch: "Fairy", color: "#fbcfe8" }
-    ].map(p => ({
-        ...p,
-        img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`,
-        cry: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/cries/latest/${p.id}.ogg`
-    }));
+      { id: 384, name: "Rayquaza", arch: "Dragon/Fly", color: "#f472b6" }
+    ].map(p => ({ ...p, img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`, cry: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/cries/latest/${p.id}.ogg` }));
 
-    // 적(야생 포켓몬) 속성 부여: 불규칙성(erratic), 속도, 공격방식
     const WILD_POKEMONS = [
-      { id: 19, name: 'Rattata', type: 'melee', hp: 90, speed: 4.0, damage: 15, erratic: 2.5, color: '#a09b8c' },
-      { id: 41, name: 'Zubat', type: 'ranged', hp: 70, speed: 2.8, damage: 10, erratic: 6.0, color: '#a78bfa' },
-      { id: 109, name: 'Koffing', type: 'ranged', hp: 150, speed: 2.0, damage: 20, erratic: 1.5, color: '#f472b6' },
-      { id: 52, name: 'Meowth', type: 'melee', hp: 100, speed: 3.5, damage: 12, erratic: 4.0, color: '#fde047' },
-      { id: 23, name: 'Ekans', type: 'ranged', hp: 110, speed: 2.5, damage: 15, erratic: 3.0, color: '#a78bfa' }
-    ].map(p => ({
-        ...p,
-        img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`
-    }));
-
-    const SPELL_DEFS = {
-      D: { name: 'FLASH', desc: 'Instant blink', cd: 10.0, color: '#e8c547' },
-      F: { name: 'HEAL', desc: 'Restore 40 HP', cd: 15.0, color: '#4ade80' }
-    };
+      { id: 19, name: 'Rattata', type: 'melee', hp: 80, speed: 4.2, damage: 15 },
+      { id: 41, name: 'Zubat', type: 'ranged', hp: 60, speed: 3.0, damage: 10 },
+      { id: 109, name: 'Koffing', type: 'ranged', hp: 140, speed: 2.2, damage: 18 }
+    ].map(p => ({ ...p, img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png` }));
 
     const getSkillSet = (arch) => {
-      const type = arch.split('/')[0];
-      switch(type) {
-          case 'Electric': return {
-              Q: { name: 'THUNDER SHOCK', desc: 'Fast bolt', cd: 0.8, color: '#fde047', projSpeed: 24, damage: 30 },
-              W: { name: 'VOLT SWITCH', desc: 'Dash + Invuln', cd: 4.0 },
-              E: { name: 'DISCHARGE', desc: 'AOE stun ring', cd: 5.0, radius: 200, color: '#fde047' },
-              R: { name: 'THUNDERSTORM', desc: 'Distance Blast', cd: 15.0 }
-          };
-          case 'Fire': return {
-              Q: { name: 'FLAMETHROWER', desc: 'Piercing flame', cd: 1.5, color: '#fb923c', projSpeed: 16, damage: 50, pierce: true, scale: 1.5 },
-              W: { name: 'FLAME CHARGE', desc: 'Dash + Invuln', cd: 5.0 },
-              E: { name: 'FIRE SPIN', desc: 'AOE burst', cd: 6.0, radius: 180, color: '#fb923c' },
-              R: { name: 'BLAST BURN', desc: 'Distance Blast', cd: 16.0 }
-          };
-          case 'Grass': return {
-              Q: { name: 'RAZOR LEAF', desc: 'Triple spread', cd: 1.2, color: '#4ade80', projSpeed: 18, damage: 25, multi: 3 },
-              W: { name: 'SYNTHESIS', desc: 'Dash + Invuln', cd: 4.0 },
-              E: { name: 'SOLAR BEAM', desc: 'AOE burst', cd: 6.0, radius: 220, color: '#4ade80' },
-              R: { name: 'FRENZY PLANT', desc: 'Distance Blast', cd: 16.0 }
-          };
-          case 'Water': return {
-              Q: { name: 'WATER GUN', desc: 'Rapid stream', cd: 0.6, color: '#38bdf8', projSpeed: 20, damage: 20, pierce: true },
-              W: { name: 'AQUA JET', desc: 'Dash + Invuln', cd: 3.5 },
-              E: { name: 'SURF', desc: 'Huge AOE', cd: 6.0, radius: 250, color: '#38bdf8' },
-              R: { name: 'HYDRO PUMP', desc: 'Distance Blast', cd: 15.0 }
-          };
-          case 'Psychic': return {
-              Q: { name: 'PSYBEAM', desc: 'Homing ball', cd: 1.0, color: '#e879f9', projSpeed: 14, damage: 40, homing: true, scale: 1.2 },
-              W: { name: 'TELEPORT', desc: 'Dash + Invuln', cd: 3.0 },
-              E: { name: 'CONFUSION', desc: 'AOE burst', cd: 5.0, radius: 200, color: '#e879f9' },
-              R: { name: 'PSYSTRIKE', desc: 'Distance Blast', cd: 14.0 }
-          };
-          default: return {
-              Q: { name: 'SWIFT', desc: 'Directional star', cd: 1.0, color: '#cbd5e1', projSpeed: 18, damage: 35 },
-              W: { name: 'QUICK ATTACK', desc: 'Dash + Invuln', cd: 4.0 },
-              E: { name: 'HYPER VOICE', desc: 'AOE burst', cd: 6.0, radius: 180, color: '#cbd5e1' },
-              R: { name: 'HYPER BEAM', desc: 'Distance Blast', cd: 18.0 }
-          };
-      }
+        const type = arch.split('/')[0];
+        const base = { Q: { name: 'BOLT', cd: 1.0, color: '#fff', speed: 18, damage: 35 }, W: { name: 'DASH', cd: 4.0 }, E: { name: 'PULSE', cd: 6.0, radius: 200 }, R: { name: 'STORM', cd: 20.0 } };
+        if (type === 'Electric') base.Q.color = '#fde047';
+        if (type === 'Fire') { base.Q.color = '#fb923c'; base.Q.pierce = true; }
+        if (type === 'Water') { base.Q.color = '#38bdf8'; base.Q.speed = 22; }
+        return base;
     };
-
-    const MAX_HP = 100;
-    const PLAYER_RADIUS = 30;
-    const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
-    const rand = (a, b) => a + Math.random() * (b - a);
-    const choice = arr => arr[Math.floor(Math.random() * arr.length)];
 
     const Game = () => {
       const [hero, setHero] = useState(null);
       const [phase, setPhase] = useState('select');
       const [pos, setPos] = useState({ x: 0, y: 0 });
-      const [targetPos, setTargetPos] = useState({ x: 0, y: 0 });
-      const [aim, setAim] = useState({ x: 1, y: 0 });
-      const [hp, setHp] = useState(MAX_HP);
+      const [hp, setHp] = useState(100);
       const [score, setScore] = useState(0);
-      const [wave, setWave] = useState(1);
-      const [waveProgress, setWaveProgress] = useState(0);
-      const [waveAnnounce, setWaveAnnounce] = useState(null);
       const [enemies, setEnemies] = useState([]);
       const [projectiles, setProjectiles] = useState([]);
       const [enemyProjectiles, setEnemyProjectiles] = useState([]);
+      const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
       const [effects, setEffects] = useState([]);
       const [dmgNumbers, setDmgNumbers] = useState([]);
-      const [cds, setCds] = useState({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
-      const [invuln, setInvuln] = useState(false);
-      const [hurtFlash, setHurtFlash] = useState(0);
 
-      const posRef = useRef(pos);
-      const targetPosRef = useRef(targetPos);
-      const aimRef = useRef(aim);
-      const hpRef = useRef(hp);
-      const invulnRef = useRef(invuln);
+      const stateRef = useRef({ pos: { x: 0, y: 0 }, target: { x: 0, y: 0 }, vel: { x: 0, y: 0 }, aim: { x: 1, y: 0 }, hp: 100, invuln: false, wave: 1 });
       const arenaRef = useRef(null);
-      const arenaSizeRef = useRef({ w: 1200, h: 800 });
-      const waveRef = useRef(1);
-      const phaseRef = useRef(phase);
-      const lastSpawnRef = useRef(0);
-      const waveStartRef = useRef(0);
-
-      useEffect(() => { posRef.current = pos; }, [pos]);
-      useEffect(() => { targetPosRef.current = targetPos; }, [targetPos]);
-      useEffect(() => { aimRef.current = aim; }, [aim]);
-      useEffect(() => { hpRef.current = hp; }, [hp]);
-      useEffect(() => { invulnRef.current = invuln; }, [invuln]);
-      useEffect(() => { waveRef.current = wave; }, [wave]);
-      useEffect(() => { phaseRef.current = phase; }, [phase]);
-
-      useEffect(() => {
-        const onMove = (e) => {
-          if (!arenaRef.current || phaseRef.current !== 'playing') return;
-          const rect = arenaRef.current.getBoundingClientRect();
-          const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
-          const p = posRef.current;
-          const dx = mx - p.x; const dy = my - p.y;
-          const len = Math.hypot(dx, dy) || 1;
-          setAim({ x: dx / len, y: dy / len });
-        };
-        window.addEventListener('mousemove', onMove);
-        return () => window.removeEventListener('mousemove', onMove);
-      }, []);
-
-      useEffect(() => {
-        const measure = () => { if (arenaRef.current) { arenaSizeRef.current = { w: arenaRef.current.getBoundingClientRect().width, h: arenaRef.current.getBoundingClientRect().height }; } };
-        measure(); window.addEventListener('resize', measure); return () => window.removeEventListener('resize', measure);
-      }, [phase]);
-
-      useEffect(() => {
-        if (phase === 'playing') {
-          const { w, h } = arenaSizeRef.current;
-          setPos({ x: w / 2, y: h / 2 }); posRef.current = { x: w / 2, y: h / 2 };
-          setTargetPos({ x: w / 2, y: h / 2 }); targetPosRef.current = { x: w / 2, y: h / 2 };
-          waveStartRef.current = Date.now();
-        }
-      }, [phase]);
 
       const startGame = (h) => {
-        new Audio(h.cry).play().catch(() => {});
-        setHero(h); setHp(MAX_HP); setScore(0); setWave(1); setWaveProgress(0);
-        setEnemies([]); setProjectiles([]); setEnemyProjectiles([]); setEffects([]); setDmgNumbers([]);
-        setCds({ Q: 0, W: 0, E: 0, R: 0, D: 0, F: 0 });
-        setInvuln(false); setPhase('playing'); setWaveAnnounce({ id: Date.now(), n: 1 });
+        new Audio(h.cry).play().catch(()=>{});
+        setHero(h); setHp(100); setScore(0); setEnemies([]); setProjectiles([]); setEnemyProjectiles([]); setPhase('playing');
+        const w = window.innerWidth/2, h2 = window.innerHeight/2;
+        setPos({ x: w, y: h2 }); stateRef.current.pos = { x: w, y: h2 }; stateRef.current.target = { x: w, y: h2 }; stateRef.current.hp = 100;
       };
-
-      const restart = () => { setPhase('select'); setHero(null); };
 
       const onArenaClick = (e) => {
-        if (phaseRef.current !== 'playing') return;
         const rect = arenaRef.current.getBoundingClientRect();
-        const tx = e.clientX - rect.left; const ty = e.clientY - rect.top;
-        setTargetPos({ x: tx, y: ty }); targetPosRef.current = { x: tx, y: ty };
-        addEffect({ type: 'waypoint', x: tx, y: ty, life: 400 });
-      };
-
-      const spawnDamageNumber = (x, y, val, color) => {
-        const id = Math.random();
-        setDmgNumbers(prev => [...prev, { id, x, y, val, color }]);
-        setTimeout(() => setDmgNumbers(prev => prev.filter(d => d.id !== id)), 800);
-      };
-
-      const addEffect = (eff) => {
-        const id = Math.random(); setEffects(prev => [...prev, { ...eff, id }]);
-        setTimeout(() => setEffects(prev => prev.filter(e => e.id !== id)), eff.life || 800);
+        const tx = e.clientX - rect.left, ty = e.clientY - rect.top;
+        stateRef.current.target = { x: tx, y: ty };
+        setEffects(prev => [...prev, { id: Math.random(), type: 'waypoint', x: tx, y: ty }]);
       };
 
       const castSkill = useCallback((k) => {
-        if (phaseRef.current !== 'playing') return;
-        setCds(prev => {
-          if (prev[k] > 0) return prev;
-          const a = aimRef.current; const p = posRef.current; let cdTime = 0;
+        if (cds[k] > 0 || phase !== 'playing') return;
+        const p = stateRef.current.pos, a = stateRef.current.aim;
+        const skills = getSkillSet(hero.arch);
+        
+        setCds(prev => ({ ...prev, [k]: (k==='D' ? 10 : k==='F' ? 15 : skills[k].cd) }));
 
-          if (k === 'D') {
-              const { w, h } = arenaSizeRef.current;
-              const nx = Math.max(40, Math.min(w - 40, p.x + a.x * 300));
-              const ny = Math.max(40, Math.min(h - 40, p.y + a.y * 300));
-              setPos({ x: nx, y: ny }); posRef.current = { x: nx, y: ny };
-              setTargetPos({ x: nx, y: ny }); targetPosRef.current = { x: nx, y: ny };
-              addEffect({ type: 'blink', x: p.x, y: p.y, life: 500 });
-              cdTime = SPELL_DEFS.D.cd;
-          } 
-          else if (k === 'F') {
-              setHp(hp => Math.min(MAX_HP, hp + 40));
-              spawnDamageNumber(p.x, p.y, '+40', '#4ade80');
-              cdTime = SPELL_DEFS.F.cd;
-          } 
-          else {
-              const skills = getSkillSet(hero.arch); const def = skills[k];
-              if (!def) return prev;
-              cdTime = def.cd;
-
-              if (k === 'Q') {
-                  const baseA = Math.atan2(a.y, a.x);
-                  const spawnProj = (offset) => {
-                      const angle = baseA + offset;
-                      setProjectiles(pp => [...pp, {
-                          id: Math.random(), x: p.x, y: p.y,
-                          vx: Math.cos(angle) * def.projSpeed, vy: Math.sin(angle) * def.projSpeed,
-                          dist: 0, range: 800, color: def.color, damage: def.damage,
-                          scale: def.scale || 1, pierce: def.pierce || false, homing: def.homing || false, hitSet: []
-                      }]);
-                  };
-                  if (def.multi === 3) { spawnProj(-0.2); spawnProj(0); spawnProj(0.2); } else { spawnProj(0); }
-              } 
-              else if (k === 'W') {
-                  const { w, h } = arenaSizeRef.current;
-                  const nx = Math.max(40, Math.min(w - 40, p.x + a.x * 220));
-                  const ny = Math.max(40, Math.min(h - 40, p.y + a.y * 220));
-                  setPos({ x: nx, y: ny }); posRef.current = { x: nx, y: ny };
-                  setTargetPos({ x: nx, y: ny }); targetPosRef.current = { x: nx, y: ny };
-                  setInvuln(true); setTimeout(() => setInvuln(false), 600);
-                  addEffect({ type: 'blink', x: p.x, y: p.y, life: 500 });
-              } 
-              else if (k === 'E') {
-                  addEffect({ type: 'aoe', x: p.x, y: p.y, life: 500, color: def.color, scale: def.radius/180 });
-                  setEnemies(prevE => {
-                      let killed = 0;
-                      const survivors = prevE.map(e => {
-                          if (dist(e.x, e.y, p.x, p.y) < def.radius) {
-                              spawnDamageNumber(e.x, e.y, 80, '#fff');
-                              return { ...e, hp: e.hp - 80 };
-                          }
-                          return e;
-                      }).filter(e => {
-                          if (e.hp <= 0) { killed++; return false; } return true;
-                      });
-                      if (killed) setScore(s => s + killed * 75);
-                      return survivors;
-                  });
-              } 
-              else if (k === 'R') {
-                  // 궁극기: 거리 감쇠 (Distance Attenuation) 알고리즘
-                  addEffect({ type: 'ult', x: 0, y: 0, life: 800 });
-                  setEnemies(prevE => {
-                      let killed = 0;
-                      const survivors = prevE.map(e => {
-                          const d = dist(p.x, p.y, e.x, e.y);
-                          const dmg = Math.max(20, Math.floor(400 - (d * 0.5))); // 거리가 멀수록 데미지 감소
-                          spawnDamageNumber(e.x, e.y, dmg, '#e8c547');
-                          return { ...e, hp: e.hp - dmg };
-                      }).filter(e => {
-                          if (e.hp <= 0) { killed++; return false; } return true;
-                      });
-                      if (killed) setScore(s => s + killed * 100);
-                      return survivors;
-                  });
-              }
-          }
-          return { ...prev, [k]: cdTime };
-        });
-      }, [hero]);
+        if (k === 'Q') {
+          setProjectiles(prev => [...prev, { id: Math.random(), x: p.x, y: p.y, vx: a.x * skills.Q.speed, vy: a.y * skills.Q.speed, color: skills.Q.color, damage: skills.Q.damage, dist: 0, pierce: skills.Q.pierce, hitSet: [] }]);
+        } else if (k === 'D') {
+          const nx = p.x + a.x * 250, ny = p.y + a.y * 250;
+          setPos({ x: nx, y: ny }); stateRef.current.pos = { x: nx, y: ny }; stateRef.current.target = { x: nx, y: ny };
+        } else if (k === 'F') {
+          setHp(prev => Math.min(100, prev + 40));
+        } else if (k === 'R') {
+          setEnemies(prev => prev.map(e => {
+            const d = Math.hypot(p.x - e.x, p.y - e.y);
+            const dmg = Math.max(20, Math.floor(300 - d * 0.4));
+            return { ...e, hp: e.hp - dmg };
+          }).filter(e => e.hp > 0));
+        }
+      }, [hero, cds, phase]);
 
       useEffect(() => {
-        const onKey = (e) => { const k = e.key.toUpperCase(); if (['Q','W','E','R','D','F'].includes(k)) { e.preventDefault(); castSkill(k); } };
-        window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+        const handleMove = (e) => {
+          if (!arenaRef.current) return;
+          const rect = arenaRef.current.getBoundingClientRect();
+          const dx = (e.clientX - rect.left) - stateRef.current.pos.x;
+          const dy = (e.clientY - rect.top) - stateRef.current.pos.y;
+          const d = Math.hypot(dx, dy) || 1;
+          stateRef.current.aim = { x: dx/d, y: dy/d };
+        };
+        const handleKey = (e) => { const k = e.key.toUpperCase(); if (['Q','W','E','R','D','F'].includes(k)) castSkill(k); };
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('keydown', handleKey);
+        return () => { window.removeEventListener('mousemove', handleMove); window.removeEventListener('keydown', handleKey); };
       }, [castSkill]);
 
       useEffect(() => {
         if (phase !== 'playing') return;
-        const TICK = 50; 
-        const interval = setInterval(() => {
-          if (phaseRef.current !== 'playing') return;
-          const { w, h } = arenaSizeRef.current;
+        const loop = setInterval(() => {
+          const s = stateRef.current, p = s.pos, t = s.target;
           
-          // 1. Click-to-Move 이동
-          const p = posRef.current; const tp = targetPosRef.current;
-          const distToTarget = Math.hypot(tp.x - p.x, tp.y - p.y);
-          if (distToTarget > 3) {
-              const moveSpeed = 14; 
-              const nx = p.x + ((tp.x - p.x) / distToTarget) * Math.min(moveSpeed, distToTarget);
-              const ny = p.y + ((tp.y - p.y) / distToTarget) * Math.min(moveSpeed, distToTarget);
-              setPos({ x: nx, y: ny }); posRef.current = { x: nx, y: ny };
+          // Kinetic Movement ( 가속/관성 로직 )
+          const dx = t.x - p.x, dy = t.y - p.y;
+          const d = Math.hypot(dx, dy);
+          if (d > 5) {
+            const acc = 1.8, friction = 0.85;
+            s.vel.x = (s.vel.x + (dx/d) * acc) * friction;
+            s.vel.y = (s.vel.y + (dy/d) * acc) * friction;
+          } else {
+            s.vel.x *= 0.7; s.vel.y *= 0.7;
           }
+          const nx = p.x + s.vel.x, ny = p.y + s.vel.y;
+          setPos({ x: nx, y: ny }); s.pos = { x: nx, y: ny };
 
-          // 2. 쿨타임 감소
-          setCds(prev => {
-            let changed = false; const next = { ...prev };
-            for (const k of Object.keys(next)) { if (next[k] > 0) { next[k] = Math.max(0, +(next[k] - TICK / 1000).toFixed(2)); changed = true; } }
-            return changed ? next : prev;
-          });
+          // Projectiles & HP damage
+          let damageTaken = 0;
+          setProjectiles(prev => prev.map(pr => ({ ...pr, x: pr.x + pr.vx, y: pr.y + pr.vy, dist: pr.dist + 15 })).filter(pr => pr.dist < 800));
+          
+          setEnemies(prev => prev.map(e => {
+            const edx = s.pos.x - e.x, edy = s.pos.y - e.y, ed = Math.hypot(edx, edy);
+            const moveX = e.x + (edx/ed) * e.kind.speed + Math.sin(Date.now()/200) * 2;
+            const moveY = e.y + (edy/ed) * e.kind.speed + Math.cos(Date.now()/200) * 2;
+            if (ed < 45) damageTaken += (e.kind.damage / 10); // 프레임당 데미지 분산
+            return { ...e, x: moveX, y: moveY };
+          }));
 
-          // 3. 투사체(유도기믹 포함) 및 적중
-          setProjectiles(prevProj => {
-            const remaining = [];
-            for (const pr of prevProj) {
-                let vx = pr.vx; let vy = pr.vy;
-                if (pr.homing) {
-                    setEnemies(es => {
-                        if (es.length > 0) {
-                            let nearest = null; let minDist = 400;
-                            for (const e of es) { const d = dist(pr.x, pr.y, e.x, e.y); if (d < minDist) { minDist = d; nearest = e; } }
-                            if (nearest) {
-                                const targetA = Math.atan2(nearest.y - pr.y, nearest.x - pr.x);
-                                const currentA = Math.atan2(vy, vx);
-                                const newA = currentA + Math.sin(targetA - currentA) * 0.25;
-                                const speed = Math.hypot(vx, vy);
-                                vx = Math.cos(newA) * speed; vy = Math.sin(newA) * speed;
-                            }
-                        }
-                        return es;
-                    });
-                }
-                const newPr = { ...pr, vx, vy, x: pr.x + vx, y: pr.y + vy, dist: pr.dist + Math.hypot(vx, vy) };
-                
-                let consumed = false;
-                setEnemies(prevE => {
-                    let scoreAdd = 0;
-                    const nextE = prevE.map(e => {
-                        if (!consumed && dist(newPr.x, newPr.y, e.x, e.y) < 38 * newPr.scale && !newPr.hitSet.includes(e.id)) {
-                            spawnDamageNumber(e.x, e.y, newPr.damage, '#fff');
-                            e.hp -= newPr.damage;
-                            if (newPr.pierce) newPr.hitSet.push(e.id); else consumed = true;
-                        }
-                        return e;
-                    }).filter(e => {
-                        if (e.hp <= 0) { scoreAdd += 50; return false; } return true;
-                    });
-                    if (scoreAdd) setScore(s => s + scoreAdd);
-                    return nextE;
-                });
-                
-                if (!consumed && newPr.dist < newPr.range && newPr.x > -50 && newPr.x < w + 50 && newPr.y > -50 && newPr.y < h + 50) {
-                    remaining.push(newPr);
-                }
-            }
-            return remaining;
-          });
+          if (damageTaken > 0) setHp(prev => { const val = Math.max(0, prev - damageTaken); if(val<=0) setPhase('dead'); return val; });
 
-          // 4. 적 무빙 (비선형 회피 기동 알고리즘) 및 능동 공격
-          let playerHitDmg = 0;
-          setEnemies(prev => {
-            const surviving = [];
-            for (const e of prev) {
-              const dx = posRef.current.x - e.x; const dy = posRef.current.y - e.y;
-              const d = Math.hypot(dx, dy) || 1;
-              const speed = e.kind.speed + (waveRef.current - 1) * 0.3;
-              
-              let nx = e.x + (dx / d) * speed;
-              let ny = e.y + (dy / d) * speed;
-
-              // 불규칙 회피/진동 벡터 (Erratic Movement)
-              nx += Math.sin(Date.now() / 200 + e.id) * e.kind.erratic;
-              ny += Math.cos(Date.now() / 200 + e.id) * e.kind.erratic;
-
-              // 원거리 적의 능동적 공격 발사
-              if (e.kind.type === 'ranged' && d < 500 && Math.random() < 0.015) {
-                 setEnemyProjectiles(ep => [...ep, {
-                    id: Math.random(), x: e.x, y: e.y,
-                    vx: (dx/d) * 10, vy: (dy/d) * 10, dist: 0, range: 600, damage: e.kind.damage, color: e.kind.color
-                 }]);
-              }
-
-              // 근접 충돌 판정
-              if (d < PLAYER_RADIUS + 20) {
-                if (!invulnRef.current) playerHitDmg += (e.kind.type === 'melee' ? e.kind.damage * 1.5 : e.kind.damage);
-                continue; 
-              }
-              surviving.push({ ...e, x: nx, y: ny });
-            }
-            return surviving;
-          });
-
-          // 5. 적 투사체 vs 플레이어 판정
-          setEnemyProjectiles(ep => {
-             const remaining = [];
-             for (const pr of ep) {
-                 const d = dist(posRef.current.x, posRef.current.y, pr.x, pr.y);
-                 if (d < PLAYER_RADIUS) {
-                     if (!invulnRef.current) playerHitDmg += pr.damage;
-                     continue;
-                 }
-                 pr.x += pr.vx; pr.y += pr.vy; pr.dist += Math.hypot(pr.vx, pr.vy);
-                 if (pr.dist < pr.range) remaining.push(pr);
-             }
-             return remaining;
-          });
-
-          if (playerHitDmg > 0) {
-            setHurtFlash(Date.now());
-            setHp(prev => {
-              const nh = Math.max(0, prev - playerHitDmg);
-              if (nh <= 0) setPhase('dead'); return nh;
-            });
-          }
-
-          // 6. 몬스터 스폰
-          const now = Date.now();
-          const spawnInterval = Math.max(250, 1000 - (waveRef.current - 1) * 80);
-          if (now - lastSpawnRef.current > spawnInterval) {
-            lastSpawnRef.current = now;
-            const edge = Math.floor(Math.random() * 4); let ex, ey; const M = 40;
-            if (edge === 0) { ex = rand(0, w); ey = -M; } else if (edge === 1) { ex = w + M; ey = rand(0, h); } else if (edge === 2) { ex = rand(0, w); ey = h + M; } else { ex = -M; ey = rand(0, h); }
-            const wildKind = choice(WILD_POKEMONS);
-            setEnemies(prev => prev.length > 80 ? prev : [...prev, {
-              id: Math.random(), x: ex, y: ey, kind: wildKind, hit: false, hp: wildKind.hp * (1 + (waveRef.current - 1)*0.2), maxHp: wildKind.hp * (1 + (waveRef.current - 1)*0.2)
-            }]);
-          }
-
-          // 7. 웨이브 진행
-          const elapsed = (Date.now() - waveStartRef.current) / 1000;
-          const waveLen = 20; const prog = Math.min(1, elapsed / waveLen);
-          setWaveProgress(prog);
-          if (prog >= 1) {
-            const nextWave = waveRef.current + 1; waveRef.current = nextWave;
-            setWave(nextWave); setWaveAnnounce({ id: Date.now(), n: nextWave });
-            waveStartRef.current = Date.now();
-            setHp(h => Math.min(MAX_HP, h + 25)); 
-          }
+          // Cooldowns
+          setCds(prev => { const n = { ...prev }; let ch = false; Object.keys(n).forEach(k => { if(n[k]>0){ n[k]=Math.max(0, n[k]-0.05); ch=true; } }); return ch ? n : prev; });
         }, 50);
-        return () => clearInterval(interval);
-      }, [phase]); 
+        return () => clearInterval(loop);
+      }, [phase]);
 
-      useEffect(() => {
-        if (!waveAnnounce) return;
-        const t = setTimeout(() => setWaveAnnounce(null), 2400); return () => clearTimeout(t);
-      }, [waveAnnounce]);
-
-      if (phase === 'select') {
-        return (
-          <div className="min-h-screen bg-[#060912] flex flex-col items-center overflow-y-auto" style={{ padding: '60px 40px' }}>
-            <div className="text-center mb-12 max-w-3xl">
-              <div className="mono text-[10px] tracking-[0.5em] text-[#6b7790] mb-4">30TH ANNIVERSARY EDITION</div>
-              <h1 className="text-7xl font-bold accent-glow tracking-tight mb-4">POKÉMON ARENA</h1>
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="h-px w-16 bg-[#2a3354]"></div>
-                <span className="mono text-[11px] tracking-[0.4em] text-[#e8c547]">SURVIVOR</span>
-                <div className="h-px w-16 bg-[#2a3354]"></div>
+      if (phase === 'select') return (
+        <div className="min-h-screen bg-[#060912] p-10 flex flex-col items-center overflow-y-auto">
+          <h1 className="text-6xl font-bold accent-glow mb-12">POKÉMON ARENA</h1>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 max-w-6xl">
+            {HEROES.map(h => (
+              <div key={h.id} onClick={() => startGame(h)} className="hero-card border border-[#1a2138] bg-[#0c1120] p-4 rounded-md cursor-pointer hover:border-[#e8c547] transition-all">
+                <img src={h.img} className="w-20 h-20 object-contain mb-2" />
+                <div className="text-center text-xs font-bold uppercase">{h.name}</div>
               </div>
-              <p className="mono text-[11px] tracking-[0.3em] text-[#6b7790] uppercase">{SLOGAN}</p>
-            </div>
-
-            <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-6xl w-full">
-              {HEROES.map(h => (
-                <div key={h.id} onClick={() => startGame(h)} className="hero-card border border-[#1a2138] bg-[#0c1120] p-4 rounded-md flex flex-col items-center cursor-pointer" style={{ '--hero-color': h.color }}>
-                  <div className="w-20 h-20 flex items-center justify-center mb-3" style={{ background: `radial-gradient(circle, ${h.color}22 0%, transparent 70%)` }}>
-                    <img src={h.img} className="w-full h-full object-contain hero-img-display" alt={h.name} />
-                  </div>
-                  <div className="mono text-[9px] tracking-[0.2em] text-[#6b7790] mb-1">{h.arch.toUpperCase()}</div>
-                  <div className="text-sm font-bold tracking-tight uppercase">{h.name}</div>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-        );
-      }
-
-      const hpPct = (hp / MAX_HP) * 100;
-      const hpClass = hp < 30 ? 'low' : hp < 60 ? 'med' : '';
-      const currentSkills = getSkillSet(hero.arch);
+        </div>
+      );
 
       return (
         <div className="h-screen flex flex-col">
           <div ref={arenaRef} className="map-arena" onClick={onArenaClick}>
-            <div className="grid-floor"></div>
-            <div className="top-banner mono">{SLOGAN}</div>
-
-            <div className="absolute top-12 left-10 z-50 flex items-center gap-5">
-              <img src={hero.img} className="w-16 h-16 object-contain hero-img-display" />
-              <div>
-                <div className="mono text-[10px] tracking-[0.3em] text-[#6b7790]">PARTNER</div>
-                <div className="text-2xl font-bold tracking-tight uppercase">{hero.name}</div>
-                <div className="mono text-[10px] text-[#6b7790] mt-0.5" style={{color: currentSkills.Q.color}}>{hero.arch.toUpperCase()}</div>
-              </div>
-              <div className="ml-6">
-                <div className="hp-bar-outer">
-                  <div className={`hp-bar-inner ${hpClass}`} style={{ width: `${hpPct}%` }}></div>
-                  <div className="absolute inset-0 flex items-center justify-center mono text-[12px] font-bold tracking-wider" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
-                    {Math.ceil(hp)} / {MAX_HP}
-                  </div>
-                </div>
-                <div className="mono text-[9px] tracking-[0.3em] text-[#6b7790] mt-1">VITALITY</div>
-              </div>
+            <div className="grid-floor" />
+            <div className="absolute top-8 left-8 z-50 flex items-center gap-4">
+              <div className="hp-bar-outer"><div className="hp-bar-inner" style={{ width: `${hp}%` }} /></div>
+              <div className="mono text-2xl font-bold">{Math.ceil(hp)} HP</div>
             </div>
-
-            <div className="absolute top-12 right-10 z-50 text-right">
-              <div className="mono text-[10px] tracking-[0.3em] text-[#6b7790]">SCORE</div>
-              <div className="text-4xl font-bold accent-glow tracking-tight tabular-nums">{score.toString().padStart(6, '0')}</div>
-              <div className="flex items-center justify-end gap-3 mt-2">
-                <div className="mono text-[10px] tracking-[0.3em] text-[#5ecfff]">WAVE</div>
-                <div className="text-2xl font-bold tabular-nums">{wave.toString().padStart(2, '0')}</div>
-              </div>
-              <div className="wave-bar ml-auto" style={{ marginLeft: 'auto' }}>
-                <div className="wave-bar-fill" style={{ width: `${waveProgress * 100}%` }}></div>
-              </div>
-            </div>
-
-            {enemies.map(e => (
-              <div key={e.id} className={`enemy ${e.hit ? 'hit' : ''}`} style={{ left: e.x, top: e.y }}>
-                <div className="enemy-hp-bar"><div className="enemy-hp-fill" style={{width: `${(e.hp/e.maxHp)*100}%`}}></div></div>
-                <img src={e.kind.img} className="w-full h-full object-contain enemy-img relative mt-2" />
-              </div>
-            ))}
-
-            {projectiles.map(p => (
-              <div key={p.id} className="projectile" style={{ 
-                  left: p.x, top: p.y, transform: `translate(-50%, -50%) scale(${p.scale})`,
-                  background: `radial-gradient(circle, #fff 0%, ${p.color} 60%, transparent 100%)`,
-                  boxShadow: `0 0 20px ${p.color}, 0 0 40px ${p.color}`
-              }} />
-            ))}
-
-            {enemyProjectiles.map(ep => (
-              <div key={ep.id} className="enemy-projectile" style={{ 
-                  left: ep.x, top: ep.y, transform: `translate(-50%, -50%) scale(0.8)`, width: 24, height: 24,
-                  background: `radial-gradient(circle, #fff 0%, ${ep.color} 60%, transparent 100%)`,
-                  boxShadow: `0 0 15px ${ep.color}`
-              }} />
-            ))}
-
-            {effects.map(eff => {
-              if (eff.type === 'aoe') return <div key={eff.id} className="aoe-ring" style={{ left: eff.x, top: eff.y, borderColor: eff.color, boxShadow: `0 0 60px ${eff.color}99, inset 0 0 60px ${eff.color}4d`, transform: `translate(-50%, -50%) scale(${eff.scale || 1})` }} />;
-              if (eff.type === 'blink') return <div key={eff.id} className="absolute pointer-events-none" style={{ left: eff.x, top: eff.y, transform: 'translate(-50%, -50%)' }}><div style={{ width: 60, height: 60, borderRadius: '50%', border: '2px solid #5ecfff', boxShadow: '0 0 30px #5ecfff', animation: 'aoe-expand 0.5s ease-out forwards' }}/></div>;
-              if (eff.type === 'ult') return <div key={eff.id} className="ult-flash" />;
-              if (eff.type === 'waypoint') return <div key={eff.id} className="waypoint" style={{ left: eff.x, top: eff.y }} />;
-              return null;
-            })}
-
-            {dmgNumbers.map(d => (
-              <div key={d.id} className="dmg-num" style={{ left: d.x, top: d.y, color: d.color || 'var(--danger)' }}>
-                {typeof d.val === 'number' ? `-${d.val}` : d.val}
-              </div>
-            ))}
-
-            <div className={`champion ${invuln ? 'invuln' : ''}`} style={{ left: pos.x, top: pos.y }}>
-              <div className="champion-ring"></div>
-              <img src={hero.img} className="w-full h-full object-contain hero-img-display" />
-              <div className="champion-shadow"></div>
-              <div className="absolute -top-7 left-1/2 -translate-x-1/2 mono px-2 py-0.5 bg-black/80 border border-[#e8c547]/40 rounded text-[10px] font-bold tracking-[0.15em] whitespace-nowrap">
-                {hero.name.toUpperCase()}
-              </div>
-            </div>
-
-            {hurtFlash > 0 && Date.now() - hurtFlash < 400 && <div key={hurtFlash} className="player-hurt"></div>}
-
-            {waveAnnounce && (
-              <div key={waveAnnounce.id} className="wave-announce">
-                <div className="mono text-[12px] tracking-[0.5em] text-[#5ecfff] mb-2">INCOMING</div>
-                <div className="text-7xl font-bold accent-glow tracking-tight">WAVE {waveAnnounce.n.toString().padStart(2, '0')}</div>
-              </div>
-            )}
-
-            {phase === 'dead' && (
-              <div className="gameover-overlay">
-                <div className="gameover-card">
-                  <div className="mono text-[11px] tracking-[0.5em] text-[#ff4d6d] mb-3">·· ARENA TERMINATED ··</div>
-                  <div className="text-5xl font-bold tracking-tight mb-6" style={{ background: 'linear-gradient(90deg, #ff4d6d, #fb923c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>GAME OVER</div>
-                  <div className="grid grid-cols-3 gap-8 mb-8 mono">
-                    <div><div className="text-[10px] tracking-[0.3em] text-[#6b7790]">FINAL SCORE</div><div className="text-3xl font-bold accent-glow tabular-nums mt-1">{score.toString().padStart(6, '0')}</div></div>
-                    <div><div className="text-[10px] tracking-[0.3em] text-[#6b7790]">WAVE REACHED</div><div className="text-3xl font-bold tabular-nums mt-1">{wave.toString().padStart(2, '0')}</div></div>
-                    <div><div className="text-[10px] tracking-[0.3em] text-[#6b7790]">PARTNER</div><div className="text-xl font-bold mt-1.5 uppercase">{hero.name}</div></div>
-                  </div>
-                  <button className="restart-btn mono" onClick={restart}>RESTART</button>
-                </div>
-              </div>
-            )}
+            {enemies.map(e => ( <div key={e.id} className="enemy" style={{ left: e.x, top: e.y }}><img src={e.kind.img} className="w-full h-full object-contain" /></div> ))}
+            {projectiles.map(p => ( <div key={p.id} className="projectile" style={{ left: p.x, top: p.y, background: p.color, boxShadow: `0 0 15px ${p.color}` }} /> ))}
+            {effects.filter(ef=>ef.type==='waypoint').map(ef => ( <div key={ef.id} className="waypoint" style={{ left: ef.x, top: ef.y }} /> ))}
+            <div className="champion" style={{ left: pos.x, top: pos.y }}><img src={hero.img} className="w-full h-full object-contain" /><div className="champion-shadow" /></div>
           </div>
-
           <div className="hud">
-            <div className="flex gap-4">
-              {['Q','W','E','R'].map(k => {
-                const def = currentSkills[k]; const ready = cds[k] === 0; const color = def.color || (k === 'R' ? '#5ecfff' : '#e8c547');
-                return (
-                  <div key={k} className="flex flex-col items-center">
-                    <div className={`skill-slot ${ready ? 'ready' : ''}`} style={{ borderColor: ready ? color : '#2a3354', boxShadow: ready ? `0 0 15px ${color}4d` : 'none' }}>
-                      <div className="text-center">
-                        <div className="text-[24px] font-bold" style={{color: color}}>{k}</div>
-                        <div className="mono text-[7px] tracking-[0.1em] text-[#6b7790] -mt-1 leading-tight">{def.name.replace(' ', '<br/>').toUpperCase()}</div>
-                      </div>
-                      {cds[k] > 0 && <div className="cd-overlay">{cds[k].toFixed(1)}</div>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="w-px h-16 bg-[#2a3354] mx-2" />
-            <div className="flex gap-4">
-              {['D','F'].map(k => {
-                const def = SPELL_DEFS[k]; const ready = cds[k] === 0;
-                return (
-                  <div key={k} className="flex flex-col items-center">
-                    <div className={`skill-slot ${ready ? 'ready' : ''}`} style={{ borderColor: ready ? def.color : '#2a3354', borderRadius: '50%' }}>
-                      <div className="text-center">
-                        <div className="text-[22px] font-black" style={{color: def.color}}>{k}</div>
-                        <div className="mono text-[7px] tracking-[0.2em] text-[#6b7790] -mt-1">{def.name}</div>
-                      </div>
-                      {cds[k] > 0 && <div className="cd-overlay" style={{borderRadius: '50%'}}>{Math.ceil(cds[k])}</div>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="w-px h-16 bg-[#2a3354] mx-2" />
-            <div className="flex flex-col items-start gap-1 mono text-[9px] text-[#6b7790]">
-              <div><span style={{color: currentSkills.Q.color || '#e8c547'}}>Q</span> · {currentSkills.Q.desc.toUpperCase()}</div>
-              <div><span style={{color: SPELL_DEFS.D.color}}>D</span> · FLASH (BLINK)</div>
-              <div><span style={{color: SPELL_DEFS.F.color}}>F</span> · HEAL (+40 HP)</div>
-              <div><span style={{color: currentSkills.R.color || '#5ecfff'}}>R</span> · {currentSkills.R.desc.toUpperCase()}</div>
-            </div>
+            {['Q','W','E','R','D','F'].map(k => (
+              <div key={k} className={`skill-slot ${cds[k]===0?'ready':''}`}>
+                <span className="text-2xl font-bold">{k}</span>
+                {cds[k] > 0 && <div className="cd-overlay">{cds[k].toFixed(1)}</div>}
+              </div>
+            ))}
           </div>
+          {phase === 'dead' && <div className="gameover-overlay"><div className="gameover-card"><h1 className="text-5xl font-bold mb-8">GAME OVER</h1><button className="restart-btn" onClick={()=>setPhase('select')}>RETRY</button></div></div>}
         </div>
       );
     };
